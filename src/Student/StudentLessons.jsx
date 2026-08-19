@@ -1,112 +1,206 @@
-import React, { useState } from "react";
+import React from "react";
+import { Link, useParams } from "react-router-dom";
+import { useCourses } from "../Context/CourseContext";
 
 function StudentLessons() {
-  const [selectedLesson, setSelectedLesson] = useState(0);
-  const [completedLessons, setCompletedLessons] = useState([]);
 
-  const lessons = [
-    {
-      id: 1,
-      title: "Introduction to React",
-      content:
-        "React is a JavaScript library used to build interactive user interfaces.",
-    },
-    {
-      id: 2,
-      title: "React Components",
-      content:
-        "Components are reusable parts of a React application. They help us divide the UI into smaller sections.",
-    },
-    {
-      id: 3,
-      title: "Props and State",
-      content:
-        "Props are used to pass data to components, while state is used to manage data that can change.",
-    },
-    {
-      id: 4,
-      title: "useState Hook",
-      content:
-        "The useState hook allows functional components to store and update values.",
-    },
-  ];
+  const { id } = useParams();
 
-  function markAsCompleted() {
-    if (!completedLessons.includes(lessons[selectedLesson].id)) {
-      setCompletedLessons([
-        ...completedLessons,
-        lessons[selectedLesson].id,
-      ]);
-    }
+  const { courses, enrolledCourses } = useCourses();
+
+  const course = courses.find(
+    (item) => item.id.toString() === id
+  );
+
+  const enrolledCourse = enrolledCourses.find(
+    (item) => item.id.toString() === id
+  );
+
+  if (!course) {
+    return (
+      <div style={styles.container}>
+        <div style={styles.messageCard}>
+          <h2>Course Not Found</h2>
+
+          <Link to="/student/courses">
+            Back to Courses
+          </Link>
+        </div>
+      </div>
+    );
   }
 
-  const currentLesson = lessons[selectedLesson];
+  if (!enrolledCourse) {
+    return (
+      <div style={styles.container}>
+        <div style={styles.messageCard}>
+
+          <h2>Course Not Enrolled</h2>
+
+          <p>
+            Please enroll in this course before
+            starting the lessons.
+          </p>
+
+          <Link
+            to={`/student/course-details/${course.id}`}
+            style={styles.button}
+          >
+            View Course
+          </Link>
+
+        </div>
+      </div>
+    );
+  }
 
   return (
     <div style={styles.container}>
 
-      <h1 style={styles.heading}>React JS Lessons</h1>
+      {/* Header */}
 
-      <p style={styles.subText}>
-        Complete each lesson to track your learning progress.
-      </p>
+      <div style={styles.header}>
 
-      <div style={styles.lessonContainer}>
+        <h1 style={styles.title}>
+          {course.title}
+        </h1>
 
-        {/* Lesson List */}
-        <div style={styles.lessonList}>
+        <p style={styles.subtitle}>
+          Start learning through the lessons and
+          learning materials provided for this course.
+        </p>
 
-          <h3 style={styles.listTitle}>Lessons</h3>
+      </div>
 
-          {lessons.map((lesson, index) => (
-            <div
-              key={lesson.id}
-              onClick={() => setSelectedLesson(index)}
-              style={{
-                ...styles.lessonItem,
-                backgroundColor:
-                  selectedLesson === index
-                    ? "#F3E8FF"
-                    : "#FFFFFF",
-              }}
-            >
-              <span>
-                {index + 1}. {lesson.title}
-              </span>
 
-              {completedLessons.includes(lesson.id) && (
-                <span style={styles.completed}>
-                  ✓
-                </span>
-              )}
+      {/* Course Content */}
+
+      <div style={styles.content}>
+
+        {/* Lessons List */}
+
+        <div style={styles.lessonSection}>
+
+          <h2 style={styles.sectionTitle}>
+            Course Lessons
+          </h2>
+
+
+          <div style={styles.lessonList}>
+
+            <div style={styles.lessonCard}>
+
+              <div>
+
+                <h3>
+                  Lesson 1: Introduction
+                </h3>
+
+                <p style={styles.lessonText}>
+                  Introduction to the course and
+                  the basic concepts you need to know.
+                </p>
+
+              </div>
+
+              <button style={styles.lessonButton}>
+                Watch Video
+              </button>
+
             </div>
-          ))}
+
+
+            <div style={styles.lessonCard}>
+
+              <div>
+
+                <h3>
+                  Lesson 2: Basic Concepts
+                </h3>
+
+                <p style={styles.lessonText}>
+                  Learn the fundamental concepts and
+                  important topics covered in the course.
+                </p>
+
+              </div>
+
+              <button style={styles.lessonButton}>
+                Watch Video
+              </button>
+
+            </div>
+
+
+            <div style={styles.lessonCard}>
+
+              <div>
+
+                <h3>
+                  Lesson 3: Practical Learning
+                </h3>
+
+                <p style={styles.lessonText}>
+                  Apply the concepts through practical
+                  examples and exercises.
+                </p>
+
+              </div>
+
+              <button style={styles.lessonButton}>
+                Watch Video
+              </button>
+
+            </div>
+
+          </div>
 
         </div>
 
-        {/* Lesson Content */}
-        <div style={styles.content}>
 
-          <h2>{currentLesson.title}</h2>
+        {/* Course Information */}
 
-          <p style={styles.contentText}>
-            {currentLesson.content}
+        <div style={styles.infoCard}>
+
+          <h2 style={styles.sectionTitle}>
+            Course Information
+          </h2>
+
+          <p>
+            <strong>Instructor:</strong>{" "}
+            {course.instructor}
           </p>
 
-          {completedLessons.includes(currentLesson.id) ? (
-            <p style={styles.success}>
-              ✓ Lesson Completed
-            </p>
-          ) : (
-            <button
-              onClick={markAsCompleted}
-              style={styles.button}
-            >
-              Mark as Complete
-            </button>
-          )}
+          <p>
+            <strong>Duration:</strong>{" "}
+            {course.duration}
+          </p>
+
+          <p>
+            <strong>Level:</strong>{" "}
+            {course.level}
+          </p>
+
+          <p>
+            <strong>Total Lessons:</strong>{" "}
+            {course.lessons}
+          </p>
 
         </div>
+
+      </div>
+
+
+      {/* Back */}
+
+      <div style={styles.backContainer}>
+
+        <Link
+          to="/student/my-courses"
+          style={styles.backLink}
+        >
+          ← Back to My Courses
+        </Link>
 
       </div>
 
@@ -114,83 +208,128 @@ function StudentLessons() {
   );
 }
 
+
 const styles = {
+
   container: {
-    minHeight: "100vh",
+    minHeight: "70vh",
     backgroundColor: "#F9FAFB",
-    padding: "35px 50px",
+    padding: "40px 50px",
     fontFamily: "Arial, sans-serif",
     color: "#111827",
   },
 
-  heading: {
-    marginBottom: "5px",
+  header: {
+    maxWidth: "1100px",
+    margin: "0 auto 30px",
   },
 
-  subText: {
+  title: {
+    color: "#5B21B6",
+    fontSize: "30px",
+    marginBottom: "8px",
+  },
+
+  subtitle: {
     color: "#6B7280",
-    fontSize: "14px",
-  },
-
-  lessonContainer: {
-    display: "grid",
-    gridTemplateColumns: "300px 1fr",
-    gap: "25px",
-    marginTop: "25px",
-  },
-
-  lessonList: {
-    backgroundColor: "#FFFFFF",
-    border: "1px solid #E5E7EB",
-    borderRadius: "8px",
-    padding: "15px",
-  },
-
-  listTitle: {
-    margin: "5px 0 15px",
-  },
-
-  lessonItem: {
-    padding: "13px 10px",
-    borderBottom: "1px solid #E5E7EB",
-    cursor: "pointer",
-    fontSize: "14px",
-    display: "flex",
-    justifyContent: "space-between",
-  },
-
-  completed: {
-    color: "#22C55E",
-    fontWeight: "bold",
+    fontSize: "15px",
+    lineHeight: "1.5",
   },
 
   content: {
+    maxWidth: "1100px",
+    margin: "auto",
+    display: "grid",
+    gridTemplateColumns: "2fr 1fr",
+    gap: "25px",
+    alignItems: "start",
+  },
+
+  lessonSection: {
     backgroundColor: "#FFFFFF",
     border: "1px solid #E5E7EB",
     borderRadius: "8px",
-    padding: "30px",
-    minHeight: "250px",
+    padding: "25px",
   },
 
-  contentText: {
+  sectionTitle: {
+    color: "#111827",
+    fontSize: "21px",
+    marginBottom: "20px",
+  },
+
+  lessonList: {
+    display: "flex",
+    flexDirection: "column",
+    gap: "15px",
+  },
+
+  lessonCard: {
+    border: "1px solid #E5E7EB",
+    borderRadius: "7px",
+    padding: "18px",
+    display: "flex",
+    justifyContent: "space-between",
+    alignItems: "center",
+    gap: "20px",
+  },
+
+  lessonText: {
     color: "#6B7280",
-    lineHeight: "1.7",
-    margin: "20px 0",
+    fontSize: "14px",
+    lineHeight: "1.5",
   },
 
-  button: {
+  lessonButton: {
     backgroundColor: "#7C3AED",
     color: "#FFFFFF",
     border: "none",
-    padding: "10px 18px",
-    borderRadius: "6px",
+    borderRadius: "5px",
+    padding: "9px 14px",
     cursor: "pointer",
+    whiteSpace: "nowrap",
   },
 
-  success: {
-    color: "#22C55E",
-    fontWeight: "bold",
+  infoCard: {
+    backgroundColor: "#FFFFFF",
+    border: "1px solid #E5E7EB",
+    borderRadius: "8px",
+    padding: "25px",
+    color: "#6B7280",
+    lineHeight: "1.6",
   },
+
+  button: {
+    display: "inline-block",
+    marginTop: "15px",
+    backgroundColor: "#7C3AED",
+    color: "#FFFFFF",
+    textDecoration: "none",
+    padding: "10px 16px",
+    borderRadius: "6px",
+  },
+
+  backContainer: {
+    maxWidth: "1100px",
+    margin: "25px auto",
+  },
+
+  backLink: {
+    color: "#7C3AED",
+    textDecoration: "none",
+    fontSize: "14px",
+  },
+
+  messageCard: {
+    maxWidth: "600px",
+    margin: "50px auto",
+    padding: "40px",
+    backgroundColor: "#FFFFFF",
+    border: "1px solid #E5E7EB",
+    borderRadius: "8px",
+    textAlign: "center",
+  },
+
 };
 
 export default StudentLessons;

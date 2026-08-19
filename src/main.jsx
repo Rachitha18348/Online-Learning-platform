@@ -1,15 +1,29 @@
-import { StrictMode } from "react";
-import { createRoot } from "react-dom/client";
+import React from "react";
+import ReactDOM from "react-dom/client";
 
-import "./index.css";
+import App from "./App";
 
-import App from "./App.jsx";
+import { BrowserRouter } from "react-router-dom";
 
-import "@fortawesome/fontawesome-free/css/all.min.css";
-import "bootstrap/dist/css/bootstrap.min.css";
+import { CourseProvider } from "./Context/CourseContext";
 
-createRoot(document.getElementById("root")).render(
-  <StrictMode>
-    <App />
-  </StrictMode>
+
+ReactDOM.createRoot(
+  document.getElementById("root")
+).render(
+
+  <React.StrictMode>
+
+    <BrowserRouter>
+
+      <CourseProvider>
+
+        <App />
+
+      </CourseProvider>
+
+    </BrowserRouter>
+
+  </React.StrictMode>
+
 );

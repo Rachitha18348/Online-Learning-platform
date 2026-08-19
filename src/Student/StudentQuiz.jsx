@@ -1,6 +1,15 @@
 import React, { useState } from "react";
+import { useParams, Link } from "react-router-dom";
+import { useCourses } from "../Context/CourseContext";
 
 function StudentQuiz() {
+  const { id } = useParams();
+  const { enrolledCourses } = useCourses();
+
+  const course = enrolledCourses.find(
+    (item) => item.id.toString() === id
+  );
+
   const questions = [
     {
       question: "What is React mainly used for?",
@@ -12,88 +21,112 @@ function StudentQuiz() {
       ],
       answer: "Building user interfaces",
     },
+
     {
-      question: "Which hook is used to manage state in React?",
+      question: "Which language is commonly used with React?",
       options: [
-        "useEffect",
-        "useState",
-        "useContext",
-        "useRef",
-      ],
-      answer: "useState",
-    },
-    {
-      question: "Which language is mainly used with React?",
-      options: [
-        "Python",
-        "Java",
         "JavaScript",
+        "SQL",
+        "Python",
         "C",
       ],
       answer: "JavaScript",
+    },
+
+    {
+      question: "Which hook is used to manage state in a React component?",
+      options: [
+        "useState",
+        "useRoute",
+        "usePage",
+        "useStyle",
+      ],
+      answer: "useState",
+    },
+
+    {
+      question: "What is JSX?",
+      options: [
+        "A JavaScript syntax extension",
+        "A database",
+        "A programming language",
+        "A CSS framework",
+      ],
+      answer: "A JavaScript syntax extension",
     },
   ];
 
   const [currentQuestion, setCurrentQuestion] = useState(0);
   const [selectedAnswer, setSelectedAnswer] = useState("");
-  const [score, setScore] = useState(0);
-  const [quizCompleted, setQuizCompleted] = useState(false);
+  const [score, setScore] = useState(null);
 
-  function handleAnswer(option) {
-    setSelectedAnswer(option);
+  if (!course) {
+    return (
+      <div style={styles.container}>
+        <h2>Course not found</h2>
+
+        <Link to="/student/my-courses">
+          Back to My Courses
+        </Link>
+      </div>
+    );
   }
 
   function handleNext() {
-    if (selectedAnswer === "") {
-      alert("Please select an answer.");
+    if (!selectedAnswer) {
       return;
-    }
-
-    if (
-      selectedAnswer ===
-      questions[currentQuestion].answer
-    ) {
-      setScore(score + 1);
     }
 
     if (currentQuestion < questions.length - 1) {
       setCurrentQuestion(currentQuestion + 1);
       setSelectedAnswer("");
     } else {
-      setQuizCompleted(true);
+      calculateScore();
     }
   }
 
-  function restartQuiz() {
-    setCurrentQuestion(0);
-    setSelectedAnswer("");
-    setScore(0);
-    setQuizCompleted(false);
+  function calculateScore() {
+    let finalScore = 0;
+
+    if (
+      selectedAnswer ===
+      questions[currentQuestion].answer
+    ) {
+      finalScore++;
+    }
+
+    setScore(finalScore);
   }
 
-  if (quizCompleted) {
+  if (score !== null) {
     return (
       <div style={styles.container}>
+
         <div style={styles.resultCard}>
+
           <h1>Quiz Completed!</h1>
 
-          <p style={styles.score}>
-            Your Score: {score} / {questions.length}
+          <p style={styles.courseName}>
+            {course.title}
           </p>
+
+          <div style={styles.score}>
+            {score} / {questions.length}
+          </div>
 
           <p style={styles.message}>
-            {score === questions.length
-              ? "Excellent! You answered all questions correctly."
-              : "Good effort! Keep learning and try again."}
+            You have completed the quiz.
           </p>
 
-          <button
-            onClick={restartQuiz}
+          <Link
+            to="/student/my-courses"
             style={styles.button}
           >
-            Try Again
-          </button>
+            Back to My Courses
+          </Link>
+
         </div>
+
       </div>
     );
   }
@@ -105,44 +138,66 @@ function StudentQuiz() {
 
       <div style={styles.quizCard}>
 
-        <div style={styles.header}>
-          <h1>React JS Quiz</h1>
+        <h1>{course.title} Quiz</h1>
 
-          <span>
-            Question {currentQuestion + 1} of{" "}
-            {questions.length}
-          </span>
-        </div>
+        <p style={styles.progress}>
+          Question {currentQuestion + 1} of{" "}
+          {questions.length}
+        </p>
 
-        <h2 style={styles.question}>
-          {question.question}
-        </h2>
+        <div style={styles.questionBox}>
 
-        <div>
-          {question.options.map((option, index) => (
-            <div
-              key={index}
-              onClick={() => handleAnswer(option)}
-              style={{
-                ...styles.option,
-                backgroundColor:
-                  selectedAnswer === option
-                    ? "#F3E8FF"
-                    : "#FFFFFF",
-                borderColor:
-                  selectedAnswer === option
-                    ? "#7C3AED"
-                    : "#E5E7EB",
-              }}
-            >
-              {option}
-            </div>
-          ))}
+          <h2>
+            {question.question}
+          </h2>
+
+          <div style={styles.options}>
+
+            {question.options.map((option) => (
+
+              <label
+                key={option}
+                style={{
+                  ...styles.option,
+                  backgroundColor:
+                    selectedAnswer === option
+                      ? "#F3E8FF"
+                      : "#FFFFFF",
+                  borderColor:
+                    selectedAnswer === option
+                      ? "#7C3AED"
+                      : "#E5E7EB",
+                }}
+              >
+
+                <input
+                  type="radio"
+                  name="answer"
+                  value={option}
+                  checked={
+                    selectedAnswer === option
+                  }
+                  onChange={(e) =>
+                    setSelectedAnswer(e.target.value)
+                  }
+                />
+
+                <span>{option}</span>
+
+              </label>
+
+            ))}
+
+          </div>
+
         </div>
 
         <button
           onClick={handleNext}
-          style={styles.button}
+          style={{
+            ...styles.button,
+            opacity: selectedAnswer ? 1 : 0.5,
+          }}
         >
           {currentQuestion === questions.length - 1
             ? "Submit Quiz"
@@ -161,67 +216,80 @@ const styles = {
     backgroundColor: "#F9FAFB",
     padding: "40px 50px",
     fontFamily: "Arial, sans-serif",
+    color: "#111827",
   },
 
   quizCard: {
-    maxWidth: "700px",
-    margin: "0 auto",
+    maxWidth: "750px",
+    margin: "auto",
     backgroundColor: "#FFFFFF",
     border: "1px solid #E5E7EB",
     borderRadius: "8px",
     padding: "30px",
   },
 
-  header: {
-    display: "flex",
-    justifyContent: "space-between",
-    alignItems: "center",
-    color: "#111827",
-  },
-
-  question: {
-    fontSize: "20px",
-    margin: "30px 0 20px",
-  },
-
-  option: {
-    padding: "14px",
-    border: "1px solid #E5E7EB",
-    borderRadius: "6px",
-    marginBottom: "12px",
-    cursor: "pointer",
+  progress: {
+    color: "#6B7280",
     fontSize: "14px",
   },
 
-  button: {
+  questionBox: {
+    marginTop: "25px",
+  },
+
+  options: {
+    display: "flex",
+    flexDirection: "column",
+    gap: "12px",
     marginTop: "20px",
+  },
+
+  option: {
+    display: "flex",
+    alignItems: "center",
+    gap: "10px",
+    padding: "14px",
+    border: "1px solid #E5E7EB",
+    borderRadius: "6px",
+    cursor: "pointer",
+  },
+
+  button: {
+    display: "inline-block",
     backgroundColor: "#7C3AED",
     color: "#FFFFFF",
     border: "none",
-    padding: "10px 20px",
+    padding: "11px 20px",
     borderRadius: "6px",
     cursor: "pointer",
+    marginTop: "25px",
+    textDecoration: "none",
   },
 
   resultCard: {
     maxWidth: "500px",
     margin: "80px auto",
-    padding: "35px",
-    textAlign: "center",
     backgroundColor: "#FFFFFF",
     border: "1px solid #E5E7EB",
     borderRadius: "8px",
+    padding: "40px",
+    textAlign: "center",
+  },
+
+  courseName: {
+    color: "#6B7280",
   },
 
   score: {
-    color: "#5B21B6",
-    fontSize: "24px",
+    fontSize: "45px",
     fontWeight: "bold",
+    color: "#5B21B6",
+    margin: "25px 0",
   },
 
   message: {
     color: "#6B7280",
-    lineHeight: "1.6",
+    marginBottom: "20px",
   },
 };
 

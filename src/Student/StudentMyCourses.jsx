@@ -1,134 +1,133 @@
 import React from "react";
+import { Link } from "react-router-dom";
+import { useCourses } from "../Context/CourseContext";
 
 function StudentMyCourses() {
-  const myCourses = [
-    {
-      id: 1,
-      title: "React JS",
-      instructor: "John Smith",
-      progress: 70,
-      status: "In Progress",
-    },
-    {
-      id: 2,
-      title: "Python Programming",
-      instructor: "David Kumar",
-      progress: 45,
-      status: "In Progress",
-    },
-    {
-      id: 3,
-      title: "HTML & CSS",
-      instructor: "Michael Brown",
-      progress: 100,
-      status: "Completed",
-    },
-  ];
+
+  const { enrolledCourses } = useCourses();
 
   return (
     <div style={styles.container}>
 
-      <h1 style={styles.heading}>My Courses</h1>
+      <div style={styles.header}>
+        <h1 style={styles.title}>My Courses</h1>
 
-      <p style={styles.subText}>
-        View your enrolled courses and track your learning progress.
-      </p>
+        <p style={styles.subtitle}>
+          Here you can find all the courses you have enrolled in.
+        </p>
+      </div>
 
-      <div style={styles.courseList}>
 
-        {myCourses.map((course) => (
-          <div key={course.id} style={styles.courseCard}>
+      {enrolledCourses.length === 0 ? (
 
-            <div style={styles.courseInfo}>
+        <div style={styles.emptyCard}>
+
+          <h2>No Courses Enrolled</h2>
+
+          <p>
+            You have not enrolled in any courses yet.
+          </p>
+
+          <Link
+            to="/student/courses"
+            style={styles.button}
+          >
+            Browse Courses
+          </Link>
+
+        </div>
+
+      ) : (
+
+        <div style={styles.courseGrid}>
+
+          {enrolledCourses.map((course) => (
+
+            <div
+              key={course.id}
+              style={styles.courseCard}
+            >
+
               <h2 style={styles.courseTitle}>
                 {course.title}
               </h2>
 
-              <p style={styles.subText}>
-                Instructor: {course.instructor}
+              <p style={styles.description}>
+                {course.description}
               </p>
 
-              <span
-                style={{
-                  ...styles.status,
-                  backgroundColor:
-                    course.status === "Completed"
-                      ? "#DCFCE7"
-                      : "#FEF3C7",
-                  color:
-                    course.status === "Completed"
-                      ? "#15803D"
-                      : "#B45309",
-                }}
+              <div style={styles.info}>
+
+                <p>
+                  <strong>Instructor:</strong>{" "}
+                  {course.instructor}
+                </p>
+
+                <p>
+                  <strong>Duration:</strong>{" "}
+                  {course.duration}
+                </p>
+
+                <p>
+                  <strong>Lessons:</strong>{" "}
+                  {course.lessons}
+                </p>
+
+              </div>
+
+
+              <Link
+                to={`/student/lessons/${course.id}`}
+                style={styles.learningButton}
               >
-                {course.status}
-              </span>
-            </div>
-
-            <div style={styles.progressSection}>
-
-              <div style={styles.progressHeader}>
-                <span>Progress</span>
-                <span>{course.progress}%</span>
-              </div>
-
-              <div style={styles.progressBackground}>
-                <div
-                  style={{
-                    ...styles.progressBar,
-                    width: `${course.progress}%`,
-                    backgroundColor:
-                      course.progress === 100
-                        ? "#22C55E"
-                        : "#7C3AED",
-                  }}
-                ></div>
-              </div>
+                Start Learning
+              </Link>
 
             </div>
 
-            <button
-              style={
-                course.progress === 100
-                  ? styles.completedButton
-                  : styles.button
-              }
-            >
-              {course.progress === 100
-                ? "View Course"
-                : "Continue Learning"}
-            </button>
+          ))}
 
-          </div>
-        ))}
+        </div>
 
-      </div>
+      )}
 
     </div>
   );
 }
 
+
 const styles = {
+
   container: {
-    minHeight: "100vh",
+    minHeight: "70vh",
     backgroundColor: "#F9FAFB",
-    padding: "35px 50px",
+    padding: "40px 50px",
     fontFamily: "Arial, sans-serif",
     color: "#111827",
   },
 
-  heading: {
-    marginBottom: "5px",
+  header: {
+    maxWidth: "1100px",
+    margin: "0 auto 30px",
   },
 
-  subText: {
+  title: {
+    color: "#5B21B6",
+    fontSize: "30px",
+    marginBottom: "8px",
+  },
+
+  subtitle: {
     color: "#6B7280",
-    fontSize: "14px",
-    margin: "6px 0",
+    fontSize: "15px",
   },
 
-  courseList: {
-    marginTop: "25px",
+  courseGrid: {
+    maxWidth: "1100px",
+    margin: "auto",
+    display: "grid",
+    gridTemplateColumns: "repeat(3, 1fr)",
+    gap: "20px",
   },
 
   courseCard: {
@@ -136,66 +135,62 @@ const styles = {
     border: "1px solid #E5E7EB",
     borderRadius: "8px",
     padding: "22px",
-    marginBottom: "18px",
-  },
-
-  courseInfo: {
-    marginBottom: "18px",
+    minHeight: "300px",
+    display: "flex",
+    flexDirection: "column",
   },
 
   courseTitle: {
-    margin: "0 0 6px",
-    fontSize: "19px",
+    color: "#5B21B6",
+    fontSize: "20px",
+    marginBottom: "10px",
   },
 
-  status: {
-    display: "inline-block",
-    padding: "5px 10px",
-    borderRadius: "5px",
-    fontSize: "12px",
-    marginTop: "8px",
+  description: {
+    color: "#6B7280",
+    fontSize: "14px",
+    lineHeight: "1.5",
   },
 
-  progressSection: {
-    marginBottom: "18px",
-  },
-
-  progressHeader: {
-    display: "flex",
-    justifyContent: "space-between",
+  info: {
     color: "#6B7280",
     fontSize: "13px",
-    marginBottom: "6px",
+    lineHeight: "1.4",
+    marginTop: "10px",
   },
 
-  progressBackground: {
-    height: "8px",
-    backgroundColor: "#E5E7EB",
-    borderRadius: "10px",
+  learningButton: {
+    marginTop: "auto",
+    display: "block",
+    textAlign: "center",
+    backgroundColor: "#7C3AED",
+    color: "#FFFFFF",
+    textDecoration: "none",
+    padding: "11px",
+    borderRadius: "6px",
+    fontSize: "14px",
   },
 
-  progressBar: {
-    height: "8px",
-    borderRadius: "10px",
+  emptyCard: {
+    maxWidth: "600px",
+    margin: "50px auto",
+    padding: "40px",
+    backgroundColor: "#FFFFFF",
+    border: "1px solid #E5E7EB",
+    borderRadius: "8px",
+    textAlign: "center",
   },
 
   button: {
+    display: "inline-block",
+    marginTop: "15px",
     backgroundColor: "#7C3AED",
     color: "#FFFFFF",
-    border: "none",
-    padding: "9px 18px",
+    textDecoration: "none",
+    padding: "10px 18px",
     borderRadius: "6px",
-    cursor: "pointer",
   },
 
-  completedButton: {
-    backgroundColor: "#FFFFFF",
-    color: "#5B21B6",
-    border: "1px solid #7C3AED",
-    padding: "9px 18px",
-    borderRadius: "6px",
-    cursor: "pointer",
-  },
 };
 
 export default StudentMyCourses;

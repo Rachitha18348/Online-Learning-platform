@@ -1,73 +1,72 @@
 import React from "react";
 import { Link } from "react-router-dom";
 
-function StudentDashboard() {
+function InstructorDashboard() {
   return (
     <div style={styles.container}>
 
-      {/* Welcome Section */}
-      <div style={styles.welcomeSection}>
+      <div style={styles.header}>
 
         <h1 style={styles.title}>
-          Welcome, Student!
+          Instructor Dashboard
         </h1>
 
-        <p style={styles.welcomeText}>
-          Explore courses, enroll in a course, and
-          start learning at your own pace.
+        <p style={styles.subtitle}>
+          Create and manage your courses for students.
         </p>
 
       </div>
 
 
-      {/* Dashboard Cards */}
       <div style={styles.cards}>
 
-        {/* Courses */}
+        {/* Create Course */}
+
         <div style={styles.card}>
 
           <h2 style={styles.cardTitle}>
-            Explore Courses
+            Create Course
           </h2>
 
           <p style={styles.cardText}>
-            Browse the available courses and find
-            a course that interests you.
+            Create a new course and add the course
+            information and learning content.
           </p>
 
           <Link
-            to="/student/courses"
+            to="/instructor/create-course"
             style={styles.button}
           >
-            View Courses
+            Create Course
           </Link>
 
         </div>
 
 
-        {/* My Courses */}
+        {/* Manage Courses */}
+
         <div style={styles.card}>
 
           <h2 style={styles.cardTitle}>
-            My Courses
+            Manage Courses
           </h2>
 
           <p style={styles.cardText}>
-            View the courses you have enrolled in
-            and continue your learning.
+            View and manage the courses you have created.
           </p>
 
           <Link
-            to="/student/my-courses"
+            to="/instructor/manage-courses"
             style={styles.button}
           >
-            My Courses
+            Manage Courses
           </Link>
 
         </div>
 
 
         {/* Profile */}
+
         <div style={styles.card}>
 
           <h2 style={styles.cardTitle}>
@@ -75,12 +74,11 @@ function StudentDashboard() {
           </h2>
 
           <p style={styles.cardText}>
-            View and update your personal and
-            academic information.
+            Add and update your instructor information.
           </p>
 
           <Link
-            to="/student/profile"
+            to="/instructor/profile"
             style={styles.button}
           >
             View Profile
@@ -100,31 +98,30 @@ const styles = {
   container: {
     minHeight: "70vh",
     backgroundColor: "#F9FAFB",
-    padding: "50px",
+    padding: "40px 50px",
     fontFamily: "Arial, sans-serif",
     color: "#111827",
   },
 
-  welcomeSection: {
-    maxWidth: "900px",
-    margin: "0 auto",
-    textAlign: "center",
+  header: {
+    maxWidth: "1000px",
+    margin: "0 auto 30px",
   },
 
   title: {
-    fontSize: "32px",
     color: "#5B21B6",
-    marginBottom: "10px",
+    fontSize: "30px",
+    marginBottom: "8px",
   },
 
-  welcomeText: {
+  subtitle: {
     color: "#6B7280",
-    fontSize: "16px",
+    fontSize: "15px",
   },
 
   cards: {
     maxWidth: "1000px",
-    margin: "40px auto",
+    margin: "auto",
     display: "grid",
     gridTemplateColumns: "repeat(3, 1fr)",
     gap: "20px",
@@ -135,6 +132,7 @@ const styles = {
     border: "1px solid #E5E7EB",
     borderRadius: "8px",
     padding: "25px",
+    minHeight: "220px",
   },
 
   cardTitle: {
@@ -145,8 +143,8 @@ const styles = {
 
   cardText: {
     color: "#6B7280",
-    lineHeight: "1.5",
     fontSize: "14px",
+    lineHeight: "1.5",
     minHeight: "65px",
   },
 
@@ -163,5 +161,4 @@ const styles = {
 
 };
 
-
-export default StudentDashboard;
+export default InstructorDashboard;

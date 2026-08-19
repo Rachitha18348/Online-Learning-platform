@@ -1,182 +1,238 @@
-import React, { useState } from "react";
+import React from "react";
+import { Link } from "react-router-dom";
+import { useCourses } from "../Context/CourseContext";
 
-function StudentCourses() {
+function StudentMyCourses() {
 
-  const [search, setSearch] = useState("");
-
-  const courses = [
-    {
-      id: 1,
-      title: "React JS",
-      instructor: "John Smith",
-      duration: "6 Weeks",
-      level: "Beginner",
-    },
-    {
-      id: 2,
-      title: "Python Programming",
-      instructor: "David Kumar",
-      duration: "8 Weeks",
-      level: "Beginner",
-    },
-    {
-      id: 3,
-      title: "JavaScript",
-      instructor: "Sarah Wilson",
-      duration: "5 Weeks",
-      level: "Intermediate",
-    },
-    {
-      id: 4,
-      title: "HTML & CSS",
-      instructor: "Michael Brown",
-      duration: "4 Weeks",
-      level: "Beginner",
-    },
-  ];
-
-  const filteredCourses = courses.filter((course) =>
-    course.title.toLowerCase().includes(search.toLowerCase())
-  );
+  const { enrolledCourses } = useCourses();
 
   return (
     <div style={styles.container}>
 
-      <h1 style={styles.heading}>Explore Courses</h1>
+      {/* Header */}
 
-      <p style={styles.subText}>
-        Find courses and start learning new skills.
-      </p>
+      <div style={styles.header}>
 
-      {/* Search */}
-      <input
-        type="text"
-        placeholder="Search courses..."
-        value={search}
-        onChange={(e) => setSearch(e.target.value)}
-        style={styles.search}
-      />
+        <h1 style={styles.title}>
+          Available Courses
+        </h1>
 
-      {/* Course List */}
-      <div style={styles.courseGrid}>
+        <p style={styles.subtitle}>
+          Browse the courses available and enroll in a course you are interested in.
+        </p>
 
-        {filteredCourses.length > 0 ? (
-          filteredCourses.map((course) => (
-            <div key={course.id} style={styles.courseCard}>
+      </div>
+
+
+      {/* No Courses */}
+
+      {enrolledCourses.length === 0 ? (
+
+        <div style={styles.emptyCard}>
+
+          <h2 style={styles.emptyTitle}>
+            No Courses Yet
+          </h2>
+
+          <p style={styles.emptyText}>
+          
+            Explore the available courses and start learning.
+          </p>
+
+          <Link
+            to="/student/courses"
+            style={styles.browseButton}
+          >
+            Browse Courses
+          </Link>
+
+        </div>
+
+      ) : (
+
+        /* Enrolled Courses */
+
+        <div style={styles.courseGrid}>
+
+          {enrolledCourses.map((course) => (
+
+            <div
+              key={course.id}
+              style={styles.courseCard}
+            >
 
               <h2 style={styles.courseTitle}>
                 {course.title}
               </h2>
 
-              <p style={styles.info}>
-                Instructor: {course.instructor}
+
+              <p style={styles.description}>
+                {course.description}
               </p>
 
-              <p style={styles.info}>
-                Duration: {course.duration}
-              </p>
 
-              <span style={styles.level}>
-                {course.level}
-              </span>
+              <div style={styles.courseInfo}>
 
-              <br />
+                <p>
+                  <strong>Instructor:</strong>{" "}
+                  {course.instructor}
+                </p>
 
-              <button style={styles.button}>
-                View Details
-              </button>
+                <p>
+                  <strong>Duration:</strong>{" "}
+                  {course.duration}
+                </p>
+
+                <p>
+                  <strong>Lessons:</strong>{" "}
+                  {course.lessons}
+                </p>
+
+              </div>
+
+
+              {/* Start Learning */}
+
+              <Link
+                to={`/student/lessons/${course.id}`}
+                style={styles.learningButton}
+              >
+                Start Learning
+              </Link>
 
             </div>
-          ))
-        ) : (
-          <p style={styles.noCourse}>
-            No courses found.
-          </p>
-        )}
 
-      </div>
+          ))}
+
+        </div>
+
+      )}
 
     </div>
   );
 }
 
+
 const styles = {
 
   container: {
-    minHeight: "100vh",
+    minHeight: "70vh",
     backgroundColor: "#F9FAFB",
-    padding: "35px 50px",
+    padding: "40px 50px",
     fontFamily: "Arial, sans-serif",
-  },
-
-  heading: {
     color: "#111827",
-    marginBottom: "5px",
   },
 
-  subText: {
+
+  header: {
+    maxWidth: "1100px",
+    margin: "0 auto 30px",
+  },
+
+
+  title: {
+    color: "#5B21B6",
+    fontSize: "30px",
+    marginBottom: "8px",
+  },
+
+
+  subtitle: {
     color: "#6B7280",
-    marginBottom: "25px",
+    fontSize: "15px",
   },
 
-  search: {
-    width: "100%",
-    maxWidth: "500px",
-    padding: "11px",
-    border: "1px solid #D1D5DB",
-    borderRadius: "6px",
-    fontSize: "14px",
-    marginBottom: "25px",
-    outline: "none",
-  },
 
   courseGrid: {
+    maxWidth: "1100px",
+    margin: "auto",
     display: "grid",
-    gridTemplateColumns: "repeat(2, 1fr)",
+    gridTemplateColumns: "repeat(3, 1fr)",
     gap: "20px",
   },
+
 
   courseCard: {
     backgroundColor: "#FFFFFF",
     border: "1px solid #E5E7EB",
     borderRadius: "8px",
     padding: "22px",
+    display: "flex",
+    flexDirection: "column",
+    minHeight: "300px",
   },
+
 
   courseTitle: {
-    color: "#111827",
-    marginTop: 0,
+    color: "#5B21B6",
+    fontSize: "20px",
+    marginBottom: "10px",
   },
 
-  info: {
+
+  description: {
     color: "#6B7280",
     fontSize: "14px",
-    margin: "7px 0",
+    lineHeight: "1.5",
   },
 
-  level: {
-    display: "inline-block",
-    marginTop: "8px",
-    padding: "5px 10px",
-    backgroundColor: "#F3E8FF",
-    color: "#5B21B6",
-    borderRadius: "5px",
-    fontSize: "12px",
+
+  courseInfo: {
+    marginTop: "15px",
+    color: "#6B7280",
+    fontSize: "13px",
+    lineHeight: "1.5",
   },
 
-  button: {
-    marginTop: "18px",
-    padding: "9px 16px",
+
+  learningButton: {
+    marginTop: "auto",
+    display: "block",
+    textAlign: "center",
     backgroundColor: "#7C3AED",
     color: "#FFFFFF",
-    border: "none",
+    textDecoration: "none",
+    padding: "11px",
     borderRadius: "6px",
-    cursor: "pointer",
+    fontSize: "14px",
   },
 
-  noCourse: {
-    color: "#6B7280",
+
+  emptyCard: {
+    maxWidth: "600px",
+    margin: "50px auto",
+    backgroundColor: "#FFFFFF",
+    border: "1px solid #E5E7EB",
+    borderRadius: "8px",
+    padding: "40px",
+    textAlign: "center",
   },
+
+
+  emptyTitle: {
+    color: "#5B21B6",
+    marginBottom: "10px",
+  },
+
+
+  emptyText: {
+    color: "#6B7280",
+    lineHeight: "1.5",
+    marginBottom: "20px",
+  },
+
+
+  browseButton: {
+    display: "inline-block",
+    backgroundColor: "#7C3AED",
+    color: "#FFFFFF",
+    textDecoration: "none",
+    padding: "10px 18px",
+    borderRadius: "6px",
+    fontSize: "14px",
+  },
+
 };
 
-export default StudentCourses;
+
+export default StudentMyCourses;
