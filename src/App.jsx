@@ -1,65 +1,63 @@
-import React, { useState } from "react";
+import React from "react";
 import { BrowserRouter, Routes, Route } from "react-router-dom";
 
-import Navbar from "./Navbar";
-import Slidebar from "./Slidebar";
-import Dashboard from "./Dashboard";
-import MyCourses from "./MyCourses";
+import StudentNavbar from "./components/StudentNavbar";
+import StudentFooter from "./components/StudentFooter";
 
-import "./App.css";
+import StudentDashboard from "./student/StudentDashboard";
+import StudentCourses from "./student/StudentCourses";
+import StudentCourseDetails from "./student/StudentCourseDetails";
+import StudentMyCourses from "./student/StudentMyCourses";
+import StudentLessons from "./student/StudentLessons";
+import StudentQuiz from "./student/StudentQuiz";
+import StudentProfile from "./student/StudentProfile";
 
 function App() {
-
-  const [search, setSearch] = useState("");
-
   return (
     <BrowserRouter>
 
-      {/* Navbar */}
-      <Navbar
-        search={search}
-        setSearch={setSearch}
-      />
+      <StudentNavbar />
 
-      {/* Main area below Navbar */}
-      <div className="main-layout">
+      <Routes>
 
-        {/* Sidebar */}
-        <Slidebar />
+        <Route
+          path="/student/dashboard"
+          element={<StudentDashboard />}
+        />
 
-        {/* Page content */}
-        <main className="page-content">
+        <Route
+          path="/student/courses"
+          element={<StudentCourses />}
+        />
 
-          <Routes>
+        <Route
+          path="/student/course-details"
+          element={<StudentCourseDetails />}
+        />
 
-            {/* Dashboard */}
-            <Route
-              path="/"
-              element={
-                <Dashboard search={search} />
-              }
-            />
+        <Route
+          path="/student/my-courses"
+          element={<StudentMyCourses />}
+        />
 
-            <Route
-              path="/dashboard"
-              element={
-                <Dashboard search={search} />
-              }
-            />
+        <Route
+          path="/student/lessons"
+          element={<StudentLessons />}
+        />
 
-            {/* My Courses */}
-            <Route
-              path="/mycourses"
-              element={
-                <MyCourses />
-              }
-            />
+        <Route
+          path="/student/quiz"
+          element={<StudentQuiz />}
+        />
 
-          </Routes>
+        <Route
+          path="/student/profile"
+          element={<StudentProfile />}
+        />
 
-        </main>
+      </Routes>
 
-      </div>
+      <StudentFooter />
 
     </BrowserRouter>
   );
