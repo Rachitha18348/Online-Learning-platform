@@ -4,7 +4,30 @@ import { useCourses } from "../Context/CourseContext";
 
 function ManageCourses() {
 
-  const { courses } = useCourses();
+  const {
+    courses,
+    deleteCourse,
+  } = useCourses();
+
+
+  function handleDelete(courseId) {
+
+    const confirmDelete =
+      window.confirm(
+        "Are you sure you want to delete this course?"
+      );
+
+
+    if (confirmDelete) {
+
+      deleteCourse(courseId);
+
+      alert("Course deleted successfully.");
+
+    }
+
+  }
+
 
   return (
     <div style={styles.container}>
@@ -12,12 +35,17 @@ function ManageCourses() {
       <div style={styles.header}>
 
         <div>
-          <h1>Manage Courses</h1>
+
+          <h1 style={styles.title}>
+            Manage Courses
+          </h1>
 
           <p style={styles.subtitle}>
-            View and manage the courses created by you.
+            Create, edit, and manage your courses.
           </p>
+
         </div>
+
 
         <Link
           to="/instructor/create-course"
@@ -28,83 +56,95 @@ function ManageCourses() {
 
       </div>
 
+
       {courses.length === 0 ? (
 
         <div style={styles.emptyCard}>
-          <h3>No courses available</h3>
+
+          <h2>
+            No Courses Created
+          </h2>
 
           <p>
-            Create your first course to start teaching students.
+            You have not created any courses yet.
           </p>
+
+          <Link
+            to="/instructor/create-course"
+            style={styles.emptyButton}
+          >
+            Create Course
+          </Link>
+
         </div>
 
       ) : (
 
-        <div style={styles.courseList}>
+        <div style={styles.grid}>
 
           {courses.map((course) => (
 
             <div
               key={course.id}
-              style={styles.courseCard}
+              style={styles.card}
             >
 
-              <div style={styles.courseInfo}>
+              <h2 style={styles.courseTitle}>
+                {course.title}
+              </h2>
 
-                <h2 style={styles.title}>
-                  {course.title}
-                </h2>
 
-                <p style={styles.description}>
-                  {course.description}
+              <p style={styles.description}>
+                {course.description}
+              </p>
+
+
+              <div style={styles.info}>
+
+                <p>
+                  <strong>Instructor:</strong>{" "}
+                  {course.instructor}
                 </p>
 
-                <div style={styles.details}>
+                <p>
+                  <strong>Duration:</strong>{" "}
+                  {course.duration}
+                </p>
 
-                  <span>
-                    <strong>Instructor:</strong>{" "}
-                    {course.instructor}
-                  </span>
+                <p>
+                  <strong>Level:</strong>{" "}
+                  {course.level}
+                </p>
 
-                  <span>
-                    <strong>Duration:</strong>{" "}
-                    {course.duration}
-                  </span>
-
-                  <span>
-                    <strong>Level:</strong>{" "}
-                    {course.level}
-                  </span>
-
-                  <span>
-                    <strong>Students:</strong>{" "}
-                    {course.students}
-                  </span>
-
-                </div>
+                <p>
+                  <strong>Lessons:</strong>{" "}
+                  {course.lessons?.length || 0}
+                </p>
 
               </div>
 
+
               <div style={styles.actions}>
 
-                <span
-                  style={{
-                    ...styles.status,
-                    backgroundColor:
-                      course.status === "Published"
-                        ? "#DCFCE7"
-                        : "#FEF3C7",
-                    color:
-                      course.status === "Published"
-                        ? "#15803D"
-                        : "#B45309",
-                  }}
-                >
-                  {course.status}
-                </span>
+                {/* EDIT */}
 
-                <button style={styles.manageButton}>
-                  Manage
+                <Link
+                  to={`/instructor/edit-course/${course.id}`}
+                  style={styles.editButton}
+                >
+                  Edit
+                </Link>
+
+
+                {/* DELETE */}
+
+                <button
+                  onClick={() =>
+                    handleDelete(course.id)
+                  }
+                  style={styles.deleteButton}
+                >
+                  Delete
                 </button>
 
               </div>
@@ -121,107 +161,116 @@ function ManageCourses() {
   );
 }
 
+
 const styles = {
 
   container: {
-    minHeight: "100vh",
+    minHeight: "70vh",
+    padding: "40px 50px",
     backgroundColor: "#F9FAFB",
-    padding: "35px 50px",
     fontFamily: "Arial, sans-serif",
-    color: "#111827",
   },
 
   header: {
+    maxWidth: "1100px",
+    margin: "0 auto 30px",
     display: "flex",
     justifyContent: "space-between",
     alignItems: "center",
   },
 
+  title: {
+    color: "#5B21B6",
+    fontSize: "30px",
+    marginBottom: "8px",
+  },
+
   subtitle: {
     color: "#6B7280",
-    fontSize: "14px",
   },
 
   createButton: {
     backgroundColor: "#7C3AED",
     color: "#FFFFFF",
     textDecoration: "none",
-    padding: "10px 18px",
+    padding: "11px 18px",
     borderRadius: "6px",
-    fontSize: "14px",
   },
 
-  courseList: {
-    marginTop: "25px",
+  grid: {
+    maxWidth: "1100px",
+    margin: "auto",
+    display: "grid",
+    gridTemplateColumns:
+      "repeat(3, 1fr)",
+    gap: "20px",
   },
 
-  courseCard: {
+  card: {
     backgroundColor: "#FFFFFF",
     border: "1px solid #E5E7EB",
     borderRadius: "8px",
     padding: "22px",
-    marginBottom: "15px",
-    display: "flex",
-    justifyContent: "space-between",
-    alignItems: "center",
   },
 
-  courseInfo: {
-    maxWidth: "75%",
-  },
-
-  title: {
+  courseTitle: {
     color: "#5B21B6",
-    margin: "0 0 8px",
     fontSize: "20px",
   },
 
   description: {
     color: "#6B7280",
-    fontSize: "14px",
     lineHeight: "1.5",
   },
 
-  details: {
-    display: "flex",
-    gap: "20px",
-    flexWrap: "wrap",
+  info: {
+    color: "#4B5563",
+    fontSize: "14px",
     marginTop: "15px",
-    fontSize: "13px",
-    color: "#6B7280",
   },
 
   actions: {
     display: "flex",
-    flexDirection: "column",
-    alignItems: "flex-end",
-    gap: "12px",
+    gap: "10px",
+    marginTop: "20px",
   },
 
-  status: {
-    padding: "5px 10px",
-    borderRadius: "5px",
-    fontSize: "12px",
-  },
-
-  manageButton: {
-    backgroundColor: "#FFFFFF",
+  editButton: {
+    backgroundColor: "#EDE9FE",
     color: "#5B21B6",
-    border: "1px solid #7C3AED",
-    padding: "8px 15px",
-    borderRadius: "5px",
+    textDecoration: "none",
+    padding: "9px 18px",
+    borderRadius: "6px",
+  },
+
+  deleteButton: {
+    backgroundColor: "#DC2626",
+    color: "#FFFFFF",
+    border: "none",
+    padding: "9px 18px",
+    borderRadius: "6px",
     cursor: "pointer",
   },
 
   emptyCard: {
-    backgroundColor: "#FFFFFF",
-    border: "1px solid #E5E7EB",
-    borderRadius: "8px",
+    maxWidth: "600px",
+    margin: "60px auto",
     padding: "40px",
+    backgroundColor: "#FFFFFF",
     textAlign: "center",
-    marginTop: "25px",
-    color: "#6B7280",
+    borderRadius: "8px",
   },
+
+  emptyButton: {
+    display: "inline-block",
+    marginTop: "15px",
+    backgroundColor: "#7C3AED",
+    color: "#FFFFFF",
+    textDecoration: "none",
+    padding: "10px 18px",
+    borderRadius: "6px",
+  },
+
 };
 
 export default ManageCourses;

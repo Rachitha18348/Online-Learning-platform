@@ -6,6 +6,18 @@ import {
   Navigate,
 } from "react-router-dom";
 
+
+// =========================
+// Authentication
+// =========================
+
+import RoleSelection from "./Auth/RoleSelection";
+import StudentLogin from "./Auth/StudentLogin";
+import InstructorLogin from "./Auth/InstructorLogin";
+
+import ProtectedRoute from "./ProtectedRoute";
+
+
 // =========================
 // Student Components
 // =========================
@@ -13,12 +25,14 @@ import {
 import StudentNavbar from "./components/StudentNavbar";
 import StudentFooter from "./components/StudentFooter";
 
+
 // =========================
 // Instructor Components
 // =========================
 
 import InstructorNavbar from "./Instructor/InstructorNavbar";
 import InstructorFooter from "./Instructor/InstructorFooter";
+
 
 // =========================
 // Student Pages
@@ -32,6 +46,7 @@ import StudentLessons from "./Student/StudentLessons";
 import StudentQuiz from "./Student/StudentQuiz";
 import StudentProfile from "./Student/StudentProfile";
 
+
 // =========================
 // Instructor Pages
 // =========================
@@ -40,11 +55,8 @@ import InstructorDashboard from "./Instructor/InstructorDashboard";
 import CreateCourse from "./Instructor/CreateCourse";
 import ManageCourses from "./Instructor/ManageCourses";
 import ManageStudents from "./Instructor/ManageStudents";
+import EditCourse from "./Instructor/EditCourse";
 
-
-// =========================
-// App
-// =========================
 
 function App() {
 
@@ -52,18 +64,30 @@ function App() {
 
     <Routes>
 
+
       {/* =========================
-          DEFAULT ROUTE
+          ROLE SELECTION
       ========================= */}
 
       <Route
         path="/"
-        element={
-          <Navigate
-            to="/student/dashboard"
-            replace
-          />
-        }
+        element={<RoleSelection />}
+      />
+
+
+      {/* =========================
+          LOGIN
+      ========================= */}
+
+      <Route
+        path="/student/login"
+        element={<StudentLogin />}
+      />
+
+
+      <Route
+        path="/instructor/login"
+        element={<InstructorLogin />}
       />
 
 
@@ -71,14 +95,21 @@ function App() {
           STUDENT ROUTES
       ========================= */}
 
+
       <Route
         path="/student/dashboard"
         element={
-          <>
+
+          <ProtectedRoute role="student">
+
             <StudentNavbar />
+
             <StudentDashboard />
+
             <StudentFooter />
-          </>
+
+          </ProtectedRoute>
+
         }
       />
 
@@ -86,11 +117,17 @@ function App() {
       <Route
         path="/student/courses"
         element={
-          <>
+
+          <ProtectedRoute role="student">
+
             <StudentNavbar />
+
             <StudentCourses />
+
             <StudentFooter />
-          </>
+
+          </ProtectedRoute>
+
         }
       />
 
@@ -98,11 +135,17 @@ function App() {
       <Route
         path="/student/course-details/:id"
         element={
-          <>
+
+          <ProtectedRoute role="student">
+
             <StudentNavbar />
+
             <StudentCourseDetails />
+
             <StudentFooter />
-          </>
+
+          </ProtectedRoute>
+
         }
       />
 
@@ -110,11 +153,17 @@ function App() {
       <Route
         path="/student/my-courses"
         element={
-          <>
+
+          <ProtectedRoute role="student">
+
             <StudentNavbar />
+
             <StudentMyCourses />
+
             <StudentFooter />
-          </>
+
+          </ProtectedRoute>
+
         }
       />
 
@@ -122,11 +171,17 @@ function App() {
       <Route
         path="/student/lessons/:id"
         element={
-          <>
+
+          <ProtectedRoute role="student">
+
             <StudentNavbar />
+
             <StudentLessons />
+
             <StudentFooter />
-          </>
+
+          </ProtectedRoute>
+
         }
       />
 
@@ -134,11 +189,17 @@ function App() {
       <Route
         path="/student/quiz/:id"
         element={
-          <>
+
+          <ProtectedRoute role="student">
+
             <StudentNavbar />
+
             <StudentQuiz />
+
             <StudentFooter />
-          </>
+
+          </ProtectedRoute>
+
         }
       />
 
@@ -146,11 +207,17 @@ function App() {
       <Route
         path="/student/profile"
         element={
-          <>
+
+          <ProtectedRoute role="student">
+
             <StudentNavbar />
+
             <StudentProfile />
+
             <StudentFooter />
-          </>
+
+          </ProtectedRoute>
+
         }
       />
 
@@ -159,14 +226,21 @@ function App() {
           INSTRUCTOR ROUTES
       ========================= */}
 
+
       <Route
         path="/instructor/dashboard"
         element={
-          <>
+
+          <ProtectedRoute role="instructor">
+
             <InstructorNavbar />
+
             <InstructorDashboard />
+
             <InstructorFooter />
-          </>
+
+          </ProtectedRoute>
+
         }
       />
 
@@ -174,11 +248,17 @@ function App() {
       <Route
         path="/instructor/create-course"
         element={
-          <>
+
+          <ProtectedRoute role="instructor">
+
             <InstructorNavbar />
+
             <CreateCourse />
+
             <InstructorFooter />
-          </>
+
+          </ProtectedRoute>
+
         }
       />
 
@@ -186,11 +266,35 @@ function App() {
       <Route
         path="/instructor/manage-courses"
         element={
-          <>
+
+          <ProtectedRoute role="instructor">
+
             <InstructorNavbar />
+
             <ManageCourses />
+
             <InstructorFooter />
-          </>
+
+          </ProtectedRoute>
+
+        }
+      />
+
+
+      <Route
+        path="/instructor/edit-course/:id"
+        element={
+
+          <ProtectedRoute role="instructor">
+
+            <InstructorNavbar />
+
+            <EditCourse />
+
+            <InstructorFooter />
+
+          </ProtectedRoute>
+
         }
       />
 
@@ -198,11 +302,17 @@ function App() {
       <Route
         path="/instructor/students"
         element={
-          <>
+
+          <ProtectedRoute role="instructor">
+
             <InstructorNavbar />
+
             <ManageStudents />
+
             <InstructorFooter />
-          </>
+
+          </ProtectedRoute>
+
         }
       />
 
@@ -214,6 +324,7 @@ function App() {
       <Route
         path="*"
         element={
+
           <div
             style={{
               padding: "50px",
@@ -221,12 +332,17 @@ function App() {
               fontFamily: "Arial",
             }}
           >
-            <h1>404</h1>
+
+            <h1>
+              404
+            </h1>
 
             <p>
               Page not found.
             </p>
+
           </div>
+
         }
       />
 
@@ -234,5 +350,6 @@ function App() {
 
   );
 }
+
 
 export default App;

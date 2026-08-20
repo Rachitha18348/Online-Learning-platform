@@ -10,39 +10,78 @@ function CreateCourse() {
   const [course, setCourse] = useState({
     title: "",
     description: "",
+    duration: "",
     instructor: "",
     email: "",
-    duration: "",
     level: "",
-    lessons: 0,
-    topics: [],
+    topics: "",
+    lessons: [],
   });
 
-  const [topic, setTopic] = useState("");
+  const [lesson, setLesson] = useState({
+    title: "",
+    description: "",
+    videoUrl: "",
+  });
 
-  function handleChange(e) {
+
+  function handleCourseChange(event) {
+
+    const { name, value } = event.target;
+
     setCourse({
       ...course,
-      [e.target.name]: e.target.value,
+      [name]: value,
     });
   }
 
-  function addTopic() {
 
-    if (topic.trim() === "") {
+  function handleLessonChange(event) {
+
+    const { name, value } = event.target;
+
+    setLesson({
+      ...lesson,
+      [name]: value,
+    });
+  }
+
+
+  function addLesson() {
+
+    if (
+      lesson.title === "" ||
+      lesson.description === "" ||
+      lesson.videoUrl === ""
+    ) {
+      alert("Please fill all lesson details.");
       return;
     }
 
     setCourse({
       ...course,
-      topics: [...course.topics, topic],
+      lessons: [
+        ...course.lessons,
+        lesson,
+      ],
     });
 
-    setTopic("");
+    setLesson({
+      title: "",
+      description: "",
+      videoUrl: "",
+    });
   }
 
-  function handleSubmit(e) {
-    e.preventDefault();
+
+  function handleSubmit(event) {
+
+    event.preventDefault();
+
+    if (course.lessons.length === 0) {
+      alert("Please add at least one lesson.");
+      return;
+    }
 
     addCourse(course);
 
@@ -51,14 +90,22 @@ function CreateCourse() {
     navigate("/instructor/manage-courses");
   }
 
+
   return (
     <div style={styles.container}>
 
-      <h1>Create Course</h1>
+      <div style={styles.header}>
 
-      <p style={styles.subtitle}>
-        Create a new course for students.
-      </p>
+        <h1 style={styles.title}>
+          Create Course
+        </h1>
+
+        <p style={styles.subtitle}>
+          Create a course and add learning content for students.
+        </p>
+
+      </div>
+
 
       <form
         onSubmit={handleSubmit}
@@ -67,169 +114,292 @@ function CreateCourse() {
 
         {/* Course Name */}
 
-        <div style={styles.field}>
-          <label>Course Name</label>
+        <div style={styles.formGroup}>
+
+          <label style={styles.label}>
+            Course Name
+          </label>
 
           <input
             type="text"
             name="title"
             value={course.title}
-            onChange={handleChange}
+            onChange={handleCourseChange}
             placeholder="Enter course name"
             style={styles.input}
             required
           />
+
         </div>
+
 
         {/* Description */}
 
-        <div style={styles.field}>
-          <label>Course Description</label>
+        <div style={styles.formGroup}>
+
+          <label style={styles.label}>
+            Course Description
+          </label>
 
           <textarea
             name="description"
             value={course.description}
-            onChange={handleChange}
+            onChange={handleCourseChange}
             placeholder="Enter course description"
             rows="4"
             style={styles.textarea}
             required
           />
-        </div>
-
-        {/* Instructor Details */}
-
-        <div style={styles.row}>
-
-          <div style={styles.field}>
-            <label>Instructor Name</label>
-
-            <input
-              type="text"
-              name="instructor"
-              value={course.instructor}
-              onChange={handleChange}
-              placeholder="Instructor name"
-              style={styles.input}
-              required
-            />
-          </div>
-
-          <div style={styles.field}>
-            <label>Instructor Email</label>
-
-            <input
-              type="email"
-              name="email"
-              value={course.email}
-              onChange={handleChange}
-              placeholder="Instructor email"
-              style={styles.input}
-              required
-            />
-          </div>
 
         </div>
 
-        {/* Duration and Level */}
 
-        <div style={styles.row}>
+        {/* Duration */}
 
-          <div style={styles.field}>
-            <label>Duration</label>
+        <div style={styles.formGroup}>
 
-            <input
-              type="text"
-              name="duration"
-              value={course.duration}
-              onChange={handleChange}
-              placeholder="Example: 6 Weeks"
-              style={styles.input}
-              required
-            />
-          </div>
-
-          <div style={styles.field}>
-            <label>Level</label>
-
-            <select
-              name="level"
-              value={course.level}
-              onChange={handleChange}
-              style={styles.input}
-              required
-            >
-              <option value="">Select Level</option>
-              <option value="Beginner">Beginner</option>
-              <option value="Intermediate">
-                Intermediate
-              </option>
-              <option value="Advanced">Advanced</option>
-            </select>
-          </div>
-
-        </div>
-
-        {/* Number of Lessons */}
-
-        <div style={styles.field}>
-
-          <label>Number of Lessons</label>
+          <label style={styles.label}>
+            Duration
+          </label>
 
           <input
-            type="number"
-            name="lessons"
-            value={course.lessons}
-            onChange={handleChange}
-            min="1"
-            placeholder="Example: 10"
+            type="text"
+            name="duration"
+            value={course.duration}
+            onChange={handleCourseChange}
+            placeholder="Example: 6 Weeks"
             style={styles.input}
             required
           />
 
         </div>
 
-        {/* Course Topics */}
 
-        <div style={styles.field}>
+        {/* Instructor */}
 
-          <label>Course Topics</label>
+        <div style={styles.formGroup}>
 
-          <div style={styles.topicRow}>
+          <label style={styles.label}>
+            Instructor Name
+          </label>
 
-            <input
-              type="text"
-              value={topic}
-              onChange={(e) => setTopic(e.target.value)}
-              placeholder="Enter a topic"
-              style={styles.input}
-            />
-
-            <button
-              type="button"
-              onClick={addTopic}
-              style={styles.topicButton}
-            >
-              Add Topic
-            </button>
-
-          </div>
-
-          <ul>
-
-            {course.topics.map((item, index) => (
-              <li key={index}>
-                {item}
-              </li>
-            ))}
-
-          </ul>
+          <input
+            type="text"
+            name="instructor"
+            value={course.instructor}
+            onChange={handleCourseChange}
+            placeholder="Enter instructor name"
+            style={styles.input}
+            required
+          />
 
         </div>
 
+
+        {/* Email */}
+
+        <div style={styles.formGroup}>
+
+          <label style={styles.label}>
+            Instructor Email
+          </label>
+
+          <input
+            type="email"
+            name="email"
+            value={course.email}
+            onChange={handleCourseChange}
+            placeholder="Enter instructor email"
+            style={styles.input}
+            required
+          />
+
+        </div>
+
+
+        {/* Level */}
+
+        <div style={styles.formGroup}>
+
+          <label style={styles.label}>
+            Course Level
+          </label>
+
+          <select
+            name="level"
+            value={course.level}
+            onChange={handleCourseChange}
+            style={styles.input}
+            required
+          >
+
+            <option value="">
+              Select Level
+            </option>
+
+            <option value="Beginner">
+              Beginner
+            </option>
+
+            <option value="Intermediate">
+              Intermediate
+            </option>
+
+            <option value="Advanced">
+              Advanced
+            </option>
+
+          </select>
+
+        </div>
+
+
+        {/* Topics */}
+
+        <div style={styles.formGroup}>
+
+          <label style={styles.label}>
+            Topics
+          </label>
+
+          <textarea
+            name="topics"
+            value={course.topics}
+            onChange={handleCourseChange}
+            placeholder="Example: Components, Props, Hooks, Routing"
+            rows="3"
+            style={styles.textarea}
+            required
+          />
+
+        </div>
+
+
+        {/* =========================
+            LESSON SECTION
+        ========================= */}
+
+        <div style={styles.lessonSection}>
+
+          <h2 style={styles.lessonHeading}>
+            Add Learning Content
+          </h2>
+
+          <p style={styles.lessonText}>
+            Add lessons and their video links for students.
+          </p>
+
+
+          {/* Lesson Title */}
+
+          <div style={styles.formGroup}>
+
+            <label style={styles.label}>
+              Lesson Title
+            </label>
+
+            <input
+              type="text"
+              name="title"
+              value={lesson.title}
+              onChange={handleLessonChange}
+              placeholder="Example: Introduction to React"
+              style={styles.input}
+            />
+
+          </div>
+
+
+          {/* Lesson Description */}
+
+          <div style={styles.formGroup}>
+
+            <label style={styles.label}>
+              Lesson Description
+            </label>
+
+            <textarea
+              name="description"
+              value={lesson.description}
+              onChange={handleLessonChange}
+              placeholder="What will students learn in this lesson?"
+              rows="3"
+              style={styles.textarea}
+            />
+
+          </div>
+
+
+          {/* Video URL */}
+
+          <div style={styles.formGroup}>
+
+            <label style={styles.label}>
+              Video URL
+            </label>
+
+            <input
+              type="url"
+              name="videoUrl"
+              value={lesson.videoUrl}
+              onChange={handleLessonChange}
+              placeholder="https://www.youtube.com/..."
+              style={styles.input}
+            />
+
+          </div>
+
+
+          <button
+            type="button"
+            onClick={addLesson}
+            style={styles.addLessonButton}
+          >
+            + Add Lesson
+          </button>
+
+
+          {/* Added Lessons */}
+
+          {course.lessons.length > 0 && (
+
+            <div style={styles.lessonList}>
+
+              <h3>
+                Added Lessons
+              </h3>
+
+              {course.lessons.map((item, index) => (
+
+                <div
+                  key={index}
+                  style={styles.lessonCard}
+                >
+
+                  <strong>
+                    Lesson {index + 1}: {item.title}
+                  </strong>
+
+                  <p>
+                    {item.description}
+                  </p>
+
+                </div>
+
+              ))}
+
+            </div>
+
+          )}
+
+        </div>
+
+
+        {/* Create Course */}
+
         <button
           type="submit"
-          style={styles.button}
+          style={styles.createButton}
         >
           Create Course
         </button>
@@ -240,82 +410,124 @@ function CreateCourse() {
   );
 }
 
+
 const styles = {
 
   container: {
-    minHeight: "100vh",
+    minHeight: "70vh",
     backgroundColor: "#F9FAFB",
-    padding: "35px 50px",
+    padding: "40px 50px",
     fontFamily: "Arial, sans-serif",
     color: "#111827",
   },
 
+  header: {
+    maxWidth: "800px",
+    margin: "0 auto 30px",
+  },
+
+  title: {
+    color: "#5B21B6",
+    fontSize: "30px",
+    marginBottom: "8px",
+  },
+
   subtitle: {
     color: "#6B7280",
-    fontSize: "14px",
+    fontSize: "15px",
   },
 
   form: {
     maxWidth: "800px",
+    margin: "auto",
     backgroundColor: "#FFFFFF",
     border: "1px solid #E5E7EB",
     borderRadius: "8px",
     padding: "30px",
-    marginTop: "25px",
   },
 
-  field: {
-    display: "flex",
-    flexDirection: "column",
-    gap: "7px",
-    marginBottom: "18px",
-    flex: 1,
+  formGroup: {
+    marginBottom: "20px",
   },
 
-  row: {
-    display: "flex",
-    gap: "20px",
-  },
-
-  topicRow: {
-    display: "flex",
-    gap: "10px",
+  label: {
+    display: "block",
+    marginBottom: "7px",
+    fontSize: "14px",
+    fontWeight: "600",
   },
 
   input: {
-    padding: "10px",
+    width: "100%",
+    boxSizing: "border-box",
+    padding: "11px",
     border: "1px solid #D1D5DB",
-    borderRadius: "5px",
+    borderRadius: "6px",
     fontSize: "14px",
-    flex: 1,
   },
 
   textarea: {
-    padding: "10px",
+    width: "100%",
+    boxSizing: "border-box",
+    padding: "11px",
     border: "1px solid #D1D5DB",
-    borderRadius: "5px",
+    borderRadius: "6px",
     fontSize: "14px",
     resize: "vertical",
+    fontFamily: "Arial, sans-serif",
   },
 
-  topicButton: {
-    backgroundColor: "#5B21B6",
-    color: "#FFFFFF",
-    border: "none",
-    padding: "10px 15px",
-    borderRadius: "5px",
+  lessonSection: {
+    marginTop: "30px",
+    padding: "25px",
+    backgroundColor: "#F9FAFB",
+    border: "1px solid #E5E7EB",
+    borderRadius: "8px",
+  },
+
+  lessonHeading: {
+    color: "#5B21B6",
+    marginBottom: "8px",
+  },
+
+  lessonText: {
+    color: "#6B7280",
+    fontSize: "14px",
+    marginBottom: "25px",
+  },
+
+  addLessonButton: {
+    backgroundColor: "#EDE9FE",
+    color: "#5B21B6",
+    border: "1px solid #C4B5FD",
+    padding: "10px 16px",
+    borderRadius: "6px",
     cursor: "pointer",
   },
 
-  button: {
+  lessonList: {
+    marginTop: "25px",
+  },
+
+  lessonCard: {
+    backgroundColor: "#FFFFFF",
+    border: "1px solid #E5E7EB",
+    borderRadius: "6px",
+    padding: "15px",
+    marginTop: "10px",
+  },
+
+  createButton: {
+    marginTop: "30px",
     backgroundColor: "#7C3AED",
     color: "#FFFFFF",
     border: "none",
-    padding: "11px 22px",
+    padding: "12px 22px",
     borderRadius: "6px",
     cursor: "pointer",
-    marginTop: "10px",
+    fontSize: "15px",
   },
+
 };
 
 export default CreateCourse;

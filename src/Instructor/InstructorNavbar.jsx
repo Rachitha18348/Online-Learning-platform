@@ -1,66 +1,159 @@
 import React from "react";
-import { Link } from "react-router-dom";
+import { Link, useNavigate } from "react-router-dom";
 
 function InstructorNavbar() {
+
+  const navigate = useNavigate();
+
+  const loggedInUser = JSON.parse(
+    localStorage.getItem("loggedInUser")
+  );
+
+
+  function handleLogout() {
+
+    localStorage.removeItem("loggedInUser");
+
+    navigate("/");
+
+  }
+
+
   return (
+
     <nav style={styles.navbar}>
 
-      <div style={styles.logo}>
-        LearnHub
-      </div>
+      {/* Logo */}
+
+      <Link
+        to="/instructor/dashboard"
+        style={styles.logo}
+      >
+        Online Learning Platform
+      </Link>
+
+
+      {/* Navigation Links */}
 
       <div style={styles.links}>
 
-        <Link to="/instructor/dashboard" style={styles.link}>
+        <Link
+          to="/instructor/dashboard"
+          style={styles.link}
+        >
           Dashboard
         </Link>
 
-        <Link to="/instructor/create-course" style={styles.link}>
+        <Link
+          to="/instructor/create-course"
+          style={styles.link}
+        >
           Create Course
         </Link>
 
-        <Link to="/instructor/manage-courses" style={styles.link}>
+        <Link
+          to="/instructor/manage-courses"
+          style={styles.link}
+        >
           Manage Courses
         </Link>
 
-        <Link to="/instructor/students" style={styles.link}>
+        <Link
+          to="/instructor/students"
+          style={styles.link}
+        >
           Students
         </Link>
 
       </div>
 
+
+      {/* Instructor */}
+
+      <div style={styles.userSection}>
+
+        <span style={styles.userName}>
+          {loggedInUser?.name || "Instructor"}
+        </span>
+
+
+        <button
+          onClick={handleLogout}
+          style={styles.logoutButton}
+        >
+          Logout
+        </button>
+
+      </div>
+
     </nav>
+
   );
 }
 
+
 const styles = {
+
   navbar: {
-    height: "65px",
-    backgroundColor: "#FFFFFF",
-    borderBottom: "1px solid #E5E7EB",
+    height: "70px",
+    padding: "0 40px",
     display: "flex",
     alignItems: "center",
     justifyContent: "space-between",
-    padding: "0 45px",
+    backgroundColor: "#FFFFFF",
+    borderBottom: "1px solid #E5E7EB",
     fontFamily: "Arial, sans-serif",
   },
 
+
   logo: {
     color: "#5B21B6",
-    fontSize: "22px",
-    fontWeight: "bold",
+    textDecoration: "none",
+    fontSize: "20px",
+    fontWeight: "700",
+    whiteSpace: "nowrap",
   },
+
 
   links: {
     display: "flex",
+    alignItems: "center",
     gap: "25px",
   },
 
+
   link: {
+    color: "#374151",
     textDecoration: "none",
-    color: "#6B7280",
     fontSize: "14px",
   },
+
+
+  userSection: {
+    display: "flex",
+    alignItems: "center",
+    gap: "15px",
+  },
+
+
+  userName: {
+    color: "#111827",
+    fontWeight: "600",
+    fontSize: "14px",
+  },
+
+
+  logoutButton: {
+    backgroundColor: "#7C3AED",
+    color: "#FFFFFF",
+    border: "none",
+    padding: "9px 16px",
+    borderRadius: "6px",
+    cursor: "pointer",
+    fontSize: "14px",
+  },
+
 };
+
 
 export default InstructorNavbar;

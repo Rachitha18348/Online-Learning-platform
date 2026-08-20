@@ -1,10 +1,12 @@
 import React from "react";
-import { Link, useParams } from "react-router-dom";
+import { useParams, useNavigate } from "react-router-dom";
 import { useCourses } from "../Context/CourseContext";
 
 function StudentCourseDetails() {
 
   const { id } = useParams();
+
+  const navigate = useNavigate();
 
   const {
     courses,
@@ -12,194 +14,230 @@ function StudentCourseDetails() {
     enrollCourse,
   } = useCourses();
 
+
   const course = courses.find(
-    (item) => item.id.toString() === id
+    (item) => item.id === Number(id)
   );
 
-  // Course not found
+
   if (!course) {
+
     return (
-      <div style={styles.container}>
-        <div style={styles.notFound}>
+      <div style={styles.notFound}>
 
-          <h2>Course Not Found</h2>
+        <h2>Course Not Found</h2>
 
-          <p>
-            The course you are looking for does not exist.
-          </p>
+        <p>
+          The course you are looking for does not exist.
+        </p>
 
-          <Link
-            to="/student/courses"
-            style={styles.backLink}
-          >
-            Back to Courses
-          </Link>
-
-        </div>
       </div>
     );
+
   }
 
 
-  // Check whether student already enrolled
-  const isEnrolled = enrolledCourses.some(
+  const alreadyEnrolled = enrolledCourses.some(
     (item) => item.id === course.id
   );
 
 
-  // Enroll student
   function handleEnroll() {
 
-    const enrolled = enrollCourse(course);
+    if (!alreadyEnrolled) {
 
-    if (enrolled) {
+      enrollCourse(course);
+
       alert("Course enrolled successfully!");
-    } else {
-      alert("You are already enrolled in this course.");
+
     }
+
+    navigate("/student/my-courses");
   }
 
 
   return (
     <div style={styles.container}>
 
-      {/* Course Header */}
+      <div style={styles.card}>
 
-      <div style={styles.courseHeader}>
-
-        <span style={styles.level}>
-          {course.level}
-        </span>
+        {/* Course Title */}
 
         <h1 style={styles.title}>
           {course.title}
         </h1>
 
+
+        {/* Description */}
+
+        <h2 style={styles.heading}>
+          About This Course
+        </h2>
+
         <p style={styles.description}>
           {course.description}
         </p>
 
-      </div>
-
-
-      {/* Main Content */}
-
-      <div style={styles.content}>
 
         {/* Course Information */}
 
-        <div style={styles.mainCard}>
+        <h2 style={styles.heading}>
+          Course Information
+        </h2>
 
-          <h2 style={styles.heading}>
-            Course Information
-          </h2>
+        <div style={styles.infoGrid}>
 
+          <div style={styles.infoBox}>
 
-          <div style={styles.infoGrid}>
+            <span style={styles.label}>
+              Instructor
+            </span>
 
-            <div style={styles.infoItem}>
-              <strong>Instructor</strong>
-              <p style={styles.infoText}>
-                {course.instructor}
-              </p>
-            </div>
-
-
-            <div style={styles.infoItem}>
-              <strong>Instructor Email</strong>
-              <p style={styles.infoText}>
-                {course.email}
-              </p>
-            </div>
-
-
-            <div style={styles.infoItem}>
-              <strong>Duration</strong>
-              <p style={styles.infoText}>
-                {course.duration}
-              </p>
-            </div>
-
-
-            <div style={styles.infoItem}>
-              <strong>Lessons</strong>
-              <p style={styles.infoText}>
-                {course.lessons}
-              </p>
-            </div>
-
-
-            <div style={styles.infoItem}>
-              <strong>Level</strong>
-              <p style={styles.infoText}>
-                {course.level}
-              </p>
-            </div>
-
-
-            <div style={styles.infoItem}>
-              <strong>Students</strong>
-              <p style={styles.infoText}>
-                {course.students}
-              </p>
-            </div>
+            <span style={styles.value}>
+              {course.instructor}
+            </span>
 
           </div>
 
 
-          {/* What Student Will Learn */}
+          <div style={styles.infoBox}>
 
-          <h2 style={styles.heading}>
-            What You Will Learn
-          </h2>
+            <span style={styles.label}>
+              Instructor Email
+            </span>
 
-          <ul style={styles.topicList}>
+            <span style={styles.value}>
+              {course.email}
+            </span>
 
-            {course.topics && course.topics.length > 0 ? (
+          </div>
 
-              course.topics.map((topic, index) => (
 
-                <li key={index}>
-                  {topic}
-                </li>
+          <div style={styles.infoBox}>
 
-              ))
+            <span style={styles.label}>
+              Duration
+            </span>
 
-            ) : (
+            <span style={styles.value}>
+              {course.duration}
+            </span>
 
-              <li>
-                Course topics will be provided by the instructor.
-              </li>
+          </div>
 
-            )}
 
-          </ul>
+          <div style={styles.infoBox}>
+
+            <span style={styles.label}>
+              Level
+            </span>
+
+            <span style={styles.value}>
+              {course.level}
+            </span>
+
+          </div>
+
+
+          <div style={styles.infoBox}>
+
+            <span style={styles.label}>
+              Number of Lessons
+            </span>
+
+            <span style={styles.value}>
+              {course.lessons?.length || 0}
+            </span>
+
+          </div>
 
         </div>
 
 
-        {/* Enrollment Card */}
+        {/* Topics */}
 
-        <div style={styles.enrollCard}>
+        <h2 style={styles.heading}>
+          What You Will Learn
+        </h2>
 
-          <h2 style={styles.enrollTitle}>
-            {course.title}
-          </h2>
+        <div style={styles.topics}>
 
-          <p style={styles.enrollText}>
-            Enroll in this course to access the
-            lessons and learning materials.
+          {course.topics
+            ? course.topics
+                .split(",")
+                .map((topic, index) => (
+
+                  <span
+                    key={index}
+                    style={styles.topic}
+                  >
+                    {topic.trim()}
+                  </span>
+
+                ))
+            : (
+              <p>
+                Course topics will be provided by the instructor.
+              </p>
+            )}
+
+        </div>
+
+
+        {/* Lessons Preview */}
+
+        <h2 style={styles.heading}>
+          Course Content
+        </h2>
+
+        {course.lessons?.length > 0 ? (
+
+          <div style={styles.lessonList}>
+
+            {course.lessons.map((lesson, index) => (
+
+              <div
+                key={index}
+                style={styles.lesson}
+              >
+
+                <span>
+                  Lesson {index + 1}
+                </span>
+
+                <strong>
+                  {lesson.title}
+                </strong>
+
+              </div>
+
+            ))}
+
+          </div>
+
+        ) : (
+
+          <p style={styles.noLessons}>
+            Course content will be added by the instructor.
           </p>
 
+        )}
 
-          {isEnrolled ? (
 
-            <Link
-              to={`/student/lessons/${course.id}`}
-              style={styles.startButton}
+        {/* Enroll */}
+
+        <div style={styles.actionArea}>
+
+          {alreadyEnrolled ? (
+
+            <button
+              onClick={() =>
+                navigate("/student/my-courses")
+              }
+              style={styles.enrolledButton}
             >
-              Start Learning
-            </Link>
+              Go to My Courses
+            </button>
 
           ) : (
 
@@ -207,18 +245,10 @@ function StudentCourseDetails() {
               onClick={handleEnroll}
               style={styles.enrollButton}
             >
-              Enroll Now
+              Enroll in Course
             </button>
 
           )}
-
-
-          <Link
-            to="/student/courses"
-            style={styles.backLink}
-          >
-            ← Back to Courses
-          </Link>
 
         </div>
 
@@ -236,161 +266,129 @@ const styles = {
     backgroundColor: "#F9FAFB",
     padding: "40px 50px",
     fontFamily: "Arial, sans-serif",
-    color: "#111827",
   },
 
-
-  courseHeader: {
-    maxWidth: "1100px",
-    margin: "0 auto 30px",
+  card: {
+    maxWidth: "950px",
+    margin: "auto",
+    backgroundColor: "#FFFFFF",
+    border: "1px solid #E5E7EB",
+    borderRadius: "10px",
+    padding: "35px",
   },
 
-
-  level: {
-    display: "inline-block",
-    backgroundColor: "#F3E8FF",
+  title: {
     color: "#5B21B6",
-    padding: "5px 10px",
+    fontSize: "32px",
+    marginBottom: "30px",
+  },
+
+  heading: {
+    color: "#111827",
+    fontSize: "20px",
+    marginTop: "30px",
+    marginBottom: "15px",
+  },
+
+  description: {
+    color: "#6B7280",
+    lineHeight: "1.7",
+    fontSize: "15px",
+  },
+
+  infoGrid: {
+    display: "grid",
+    gridTemplateColumns: "repeat(2, 1fr)",
+    gap: "15px",
+  },
+
+  infoBox: {
+    padding: "15px",
+    backgroundColor: "#F9FAFB",
+    borderRadius: "6px",
+    border: "1px solid #E5E7EB",
+  },
+
+  label: {
+    display: "block",
+    color: "#6B7280",
+    fontSize: "13px",
+    marginBottom: "6px",
+  },
+
+  value: {
+    color: "#111827",
+    fontSize: "15px",
+    fontWeight: "600",
+  },
+
+  topics: {
+    display: "flex",
+    flexWrap: "wrap",
+    gap: "10px",
+  },
+
+  topic: {
+    backgroundColor: "#EDE9FE",
+    color: "#5B21B6",
+    padding: "8px 12px",
     borderRadius: "5px",
     fontSize: "13px",
   },
 
-
-  title: {
-    fontSize: "32px",
-    color: "#5B21B6",
-    margin: "12px 0",
+  lessonList: {
+    display: "flex",
+    flexDirection: "column",
+    gap: "10px",
   },
 
-
-  description: {
-    maxWidth: "800px",
-    color: "#6B7280",
-    lineHeight: "1.6",
-    fontSize: "15px",
-  },
-
-
-  content: {
-    maxWidth: "1100px",
-    margin: "auto",
-    display: "grid",
-    gridTemplateColumns: "2fr 1fr",
-    gap: "25px",
-    alignItems: "start",
-  },
-
-
-  mainCard: {
-    backgroundColor: "#FFFFFF",
-    border: "1px solid #E5E7EB",
-    borderRadius: "8px",
-    padding: "25px",
-  },
-
-
-  heading: {
-    color: "#111827",
-    fontSize: "21px",
-    marginBottom: "20px",
-  },
-
-
-  infoGrid: {
-    display: "grid",
-    gridTemplateColumns: "1fr 1fr",
-    gap: "20px",
-    marginBottom: "30px",
-  },
-
-
-  infoItem: {
-    padding: "12px",
+  lesson: {
+    display: "flex",
+    justifyContent: "space-between",
+    padding: "15px",
     backgroundColor: "#F9FAFB",
+    border: "1px solid #E5E7EB",
     borderRadius: "6px",
   },
 
-
-  infoText: {
+  noLessons: {
     color: "#6B7280",
-    marginTop: "6px",
-    marginBottom: "0",
   },
 
-
-  topicList: {
-    lineHeight: "2",
-    color: "#6B7280",
-    paddingLeft: "20px",
+  actionArea: {
+    marginTop: "35px",
+    textAlign: "center",
   },
-
-
-  enrollCard: {
-    backgroundColor: "#FFFFFF",
-    border: "1px solid #E5E7EB",
-    borderRadius: "8px",
-    padding: "25px",
-  },
-
-
-  enrollTitle: {
-    color: "#5B21B6",
-    fontSize: "20px",
-  },
-
-
-  enrollText: {
-    color: "#6B7280",
-    lineHeight: "1.5",
-    fontSize: "14px",
-  },
-
 
   enrollButton: {
-    width: "100%",
     backgroundColor: "#7C3AED",
     color: "#FFFFFF",
     border: "none",
-    padding: "12px",
+    padding: "13px 25px",
     borderRadius: "6px",
     cursor: "pointer",
     fontSize: "15px",
-    marginTop: "15px",
   },
 
-
-  startButton: {
-    display: "block",
-    textAlign: "center",
-    backgroundColor: "#22C55E",
-    color: "#FFFFFF",
-    textDecoration: "none",
-    padding: "12px",
+  enrolledButton: {
+    backgroundColor: "#EDE9FE",
+    color: "#5B21B6",
+    border: "none",
+    padding: "13px 25px",
     borderRadius: "6px",
-    marginTop: "15px",
+    cursor: "pointer",
+    fontSize: "15px",
   },
-
-
-  backLink: {
-    display: "block",
-    marginTop: "20px",
-    color: "#7C3AED",
-    textDecoration: "none",
-    fontSize: "14px",
-  },
-
 
   notFound: {
-    maxWidth: "600px",
-    margin: "50px auto",
-    backgroundColor: "#FFFFFF",
-    padding: "40px",
-    textAlign: "center",
-    borderRadius: "8px",
-    border: "1px solid #E5E7EB",
+    minHeight: "70vh",
+    display: "flex",
+    flexDirection: "column",
+    justifyContent: "center",
+    alignItems: "center",
+    fontFamily: "Arial, sans-serif",
   },
 
 };
-
 
 export default StudentCourseDetails;

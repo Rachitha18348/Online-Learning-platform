@@ -1,55 +1,24 @@
 import React from "react";
-import { Link, useParams } from "react-router-dom";
+import { useParams } from "react-router-dom";
 import { useCourses } from "../Context/CourseContext";
 
 function StudentLessons() {
-
   const { id } = useParams();
 
-  const { courses, enrolledCourses } = useCourses();
+  const { enrolledCourses } = useCourses();
 
-  const course = courses.find(
-    (item) => item.id.toString() === id
-  );
-
-  const enrolledCourse = enrolledCourses.find(
-    (item) => item.id.toString() === id
+  const course = enrolledCourses.find(
+    (item) => item.id === Number(id)
   );
 
   if (!course) {
     return (
-      <div style={styles.container}>
-        <div style={styles.messageCard}>
-          <h2>Course Not Found</h2>
+      <div style={styles.notFound}>
+        <h2>Course Not Found</h2>
 
-          <Link to="/student/courses">
-            Back to Courses
-          </Link>
-        </div>
-      </div>
-    );
-  }
-
-  if (!enrolledCourse) {
-    return (
-      <div style={styles.container}>
-        <div style={styles.messageCard}>
-
-          <h2>Course Not Enrolled</h2>
-
-          <p>
-            Please enroll in this course before
-            starting the lessons.
-          </p>
-
-          <Link
-            to={`/student/course-details/${course.id}`}
-            style={styles.button}
-          >
-            View Course
-          </Link>
-
-        </div>
+        <p>
+          This course is not available in your enrolled courses.
+        </p>
       </div>
     );
   }
@@ -57,7 +26,7 @@ function StudentLessons() {
   return (
     <div style={styles.container}>
 
-      {/* Header */}
+      {/* Course Header */}
 
       <div style={styles.header}>
 
@@ -65,142 +34,99 @@ function StudentLessons() {
           {course.title}
         </h1>
 
-        <p style={styles.subtitle}>
-          Start learning through the lessons and
-          learning materials provided for this course.
+        <p style={styles.description}>
+          {course.description}
         </p>
+
+        <div style={styles.courseInfo}>
+
+          <span>
+            <strong>Instructor:</strong>{" "}
+            {course.instructor}
+          </span>
+
+          <span>
+            <strong>Duration:</strong>{" "}
+            {course.duration}
+          </span>
+
+          <span>
+            <strong>Level:</strong>{" "}
+            {course.level}
+          </span>
+
+        </div>
 
       </div>
 
 
-      {/* Course Content */}
+      {/* Learning Content */}
 
       <div style={styles.content}>
 
-        {/* Lessons List */}
+        <h2 style={styles.sectionTitle}>
+          Course Lessons
+        </h2>
 
-        <div style={styles.lessonSection}>
 
-          <h2 style={styles.sectionTitle}>
-            Course Lessons
-          </h2>
-
+        {course.lessons && course.lessons.length > 0 ? (
 
           <div style={styles.lessonList}>
 
-            <div style={styles.lessonCard}>
+            {course.lessons.map((lesson, index) => (
 
-              <div>
+              <div
+                key={index}
+                style={styles.lessonCard}
+              >
 
-                <h3>
-                  Lesson 1: Introduction
-                </h3>
+                <div style={styles.lessonInfo}>
 
-                <p style={styles.lessonText}>
-                  Introduction to the course and
-                  the basic concepts you need to know.
-                </p>
+                  <h3 style={styles.lessonTitle}>
+                    Lesson {index + 1}: {lesson.title}
+                  </h3>
 
-              </div>
+                  <p style={styles.lessonDescription}>
+                    {lesson.description}
+                  </p>
 
-              <button style={styles.lessonButton}>
-                Watch Video
-              </button>
-
-            </div>
+                </div>
 
 
-            <div style={styles.lessonCard}>
+                {lesson.videoUrl && (
 
-              <div>
+                  <a
+                    href={lesson.videoUrl}
+                    target="_blank"
+                    rel="noopener noreferrer"
+                    style={styles.watchButton}
+                  >
+                    Watch Video
+                  </a>
 
-                <h3>
-                  Lesson 2: Basic Concepts
-                </h3>
-
-                <p style={styles.lessonText}>
-                  Learn the fundamental concepts and
-                  important topics covered in the course.
-                </p>
+                )}
 
               </div>
 
-              <button style={styles.lessonButton}>
-                Watch Video
-              </button>
-
-            </div>
-
-
-            <div style={styles.lessonCard}>
-
-              <div>
-
-                <h3>
-                  Lesson 3: Practical Learning
-                </h3>
-
-                <p style={styles.lessonText}>
-                  Apply the concepts through practical
-                  examples and exercises.
-                </p>
-
-              </div>
-
-              <button style={styles.lessonButton}>
-                Watch Video
-              </button>
-
-            </div>
+            ))}
 
           </div>
 
-        </div>
+        ) : (
 
+          <div style={styles.emptyCard}>
 
-        {/* Course Information */}
+            <h3>
+              No Learning Content
+            </h3>
 
-        <div style={styles.infoCard}>
+            <p>
+              The instructor has not added any lessons yet.
+            </p>
 
-          <h2 style={styles.sectionTitle}>
-            Course Information
-          </h2>
+          </div>
 
-          <p>
-            <strong>Instructor:</strong>{" "}
-            {course.instructor}
-          </p>
-
-          <p>
-            <strong>Duration:</strong>{" "}
-            {course.duration}
-          </p>
-
-          <p>
-            <strong>Level:</strong>{" "}
-            {course.level}
-          </p>
-
-          <p>
-            <strong>Total Lessons:</strong>{" "}
-            {course.lessons}
-          </p>
-
-        </div>
-
-      </div>
-
-
-      {/* Back */}
-
-      <div style={styles.backContainer}>
-
-        <Link
-          to="/student/my-courses"
-          style={styles.backLink}
-        >
-          ← Back to My Courses
-        </Link>
+        )}
 
       </div>
 
@@ -220,41 +146,40 @@ const styles = {
   },
 
   header: {
-    maxWidth: "1100px",
+    maxWidth: "1000px",
     margin: "0 auto 30px",
+    backgroundColor: "#FFFFFF",
+    padding: "30px",
+    borderRadius: "8px",
+    border: "1px solid #E5E7EB",
   },
 
   title: {
     color: "#5B21B6",
     fontSize: "30px",
-    marginBottom: "8px",
+    marginBottom: "10px",
   },
 
-  subtitle: {
+  description: {
     color: "#6B7280",
-    fontSize: "15px",
-    lineHeight: "1.5",
+    lineHeight: "1.6",
+  },
+
+  courseInfo: {
+    display: "flex",
+    gap: "30px",
+    flexWrap: "wrap",
+    marginTop: "20px",
+    fontSize: "14px",
   },
 
   content: {
-    maxWidth: "1100px",
+    maxWidth: "1000px",
     margin: "auto",
-    display: "grid",
-    gridTemplateColumns: "2fr 1fr",
-    gap: "25px",
-    alignItems: "start",
-  },
-
-  lessonSection: {
-    backgroundColor: "#FFFFFF",
-    border: "1px solid #E5E7EB",
-    borderRadius: "8px",
-    padding: "25px",
   },
 
   sectionTitle: {
     color: "#111827",
-    fontSize: "21px",
     marginBottom: "20px",
   },
 
@@ -265,69 +190,55 @@ const styles = {
   },
 
   lessonCard: {
+    backgroundColor: "#FFFFFF",
     border: "1px solid #E5E7EB",
-    borderRadius: "7px",
-    padding: "18px",
+    borderRadius: "8px",
+    padding: "20px",
     display: "flex",
     justifyContent: "space-between",
     alignItems: "center",
     gap: "20px",
   },
 
-  lessonText: {
+  lessonInfo: {
+    flex: 1,
+  },
+
+  lessonTitle: {
+    color: "#5B21B6",
+    marginBottom: "8px",
+  },
+
+  lessonDescription: {
     color: "#6B7280",
-    fontSize: "14px",
     lineHeight: "1.5",
   },
 
-  lessonButton: {
-    backgroundColor: "#7C3AED",
-    color: "#FFFFFF",
-    border: "none",
-    borderRadius: "5px",
-    padding: "9px 14px",
-    cursor: "pointer",
-    whiteSpace: "nowrap",
-  },
-
-  infoCard: {
-    backgroundColor: "#FFFFFF",
-    border: "1px solid #E5E7EB",
-    borderRadius: "8px",
-    padding: "25px",
-    color: "#6B7280",
-    lineHeight: "1.6",
-  },
-
-  button: {
-    display: "inline-block",
-    marginTop: "15px",
+  watchButton: {
     backgroundColor: "#7C3AED",
     color: "#FFFFFF",
     textDecoration: "none",
     padding: "10px 16px",
     borderRadius: "6px",
+    whiteSpace: "nowrap",
   },
 
-  backContainer: {
-    maxWidth: "1100px",
-    margin: "25px auto",
-  },
-
-  backLink: {
-    color: "#7C3AED",
-    textDecoration: "none",
-    fontSize: "14px",
-  },
-
-  messageCard: {
-    maxWidth: "600px",
-    margin: "50px auto",
-    padding: "40px",
+  emptyCard: {
     backgroundColor: "#FFFFFF",
     border: "1px solid #E5E7EB",
     borderRadius: "8px",
+    padding: "40px",
     textAlign: "center",
+    color: "#6B7280",
+  },
+
+  notFound: {
+    minHeight: "70vh",
+    display: "flex",
+    flexDirection: "column",
+    justifyContent: "center",
+    alignItems: "center",
+    fontFamily: "Arial, sans-serif",
   },
 
 };

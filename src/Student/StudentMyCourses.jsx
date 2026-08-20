@@ -4,57 +4,81 @@ import { useCourses } from "../Context/CourseContext";
 
 function StudentMyCourses() {
 
-  const { enrolledCourses } = useCourses();
+  const {
+    courses,
+    enrolledCourses,
+  } = useCourses();
+
+
+  // Get the latest course information
+  // for every enrolled course
+
+  const myCourses = enrolledCourses
+    .map((enrolledCourse) => {
+
+      return courses.find(
+        (course) =>
+          course.id === enrolledCourse.id
+      );
+
+    })
+    .filter(Boolean);
+
 
   return (
     <div style={styles.container}>
 
-      <div style={styles.header}>
-        <h1 style={styles.title}>My Courses</h1>
+      <h1 style={styles.title}>
+        My Courses
+      </h1>
 
-        <p style={styles.subtitle}>
-          Here you can find all the courses you have enrolled in.
-        </p>
-      </div>
+      <p style={styles.subtitle}>
+        Courses you have enrolled in are displayed here.
+      </p>
 
 
-      {enrolledCourses.length === 0 ? (
+      {myCourses.length === 0 ? (
 
         <div style={styles.emptyCard}>
 
-          <h2>No Courses Enrolled</h2>
+          <h2 style={styles.emptyTitle}>
+            No Courses Yet
+          </h2>
 
-          <p>
-            You have not enrolled in any courses yet.
+          <p style={styles.emptyText}>
+            Explore the available courses and enroll
+            in a course to start learning.
           </p>
 
           <Link
             to="/student/courses"
-            style={styles.button}
+            style={styles.exploreButton}
           >
-            Browse Courses
+            Explore Courses
           </Link>
 
         </div>
 
       ) : (
 
-        <div style={styles.courseGrid}>
+        <div style={styles.grid}>
 
-          {enrolledCourses.map((course) => (
+          {myCourses.map((course) => (
 
             <div
               key={course.id}
-              style={styles.courseCard}
+              style={styles.card}
             >
 
               <h2 style={styles.courseTitle}>
                 {course.title}
               </h2>
 
+
               <p style={styles.description}>
                 {course.description}
               </p>
+
 
               <div style={styles.info}>
 
@@ -69,8 +93,13 @@ function StudentMyCourses() {
                 </p>
 
                 <p>
+                  <strong>Level:</strong>{" "}
+                  {course.level}
+                </p>
+
+                <p>
                   <strong>Lessons:</strong>{" "}
-                  {course.lessons}
+                  {course.lessons?.length || 0}
                 </p>
 
               </div>
@@ -78,7 +107,7 @@ function StudentMyCourses() {
 
               <Link
                 to={`/student/lessons/${course.id}`}
-                style={styles.learningButton}
+                style={styles.startButton}
               >
                 Start Learning
               </Link>
@@ -100,15 +129,10 @@ const styles = {
 
   container: {
     minHeight: "70vh",
-    backgroundColor: "#F9FAFB",
     padding: "40px 50px",
+    backgroundColor: "#F9FAFB",
     fontFamily: "Arial, sans-serif",
     color: "#111827",
-  },
-
-  header: {
-    maxWidth: "1100px",
-    margin: "0 auto 30px",
   },
 
   title: {
@@ -119,25 +143,21 @@ const styles = {
 
   subtitle: {
     color: "#6B7280",
-    fontSize: "15px",
+    marginBottom: "30px",
   },
 
-  courseGrid: {
-    maxWidth: "1100px",
-    margin: "auto",
+  grid: {
     display: "grid",
-    gridTemplateColumns: "repeat(3, 1fr)",
+    gridTemplateColumns:
+      "repeat(3, 1fr)",
     gap: "20px",
   },
 
-  courseCard: {
+  card: {
     backgroundColor: "#FFFFFF",
     border: "1px solid #E5E7EB",
     borderRadius: "8px",
     padding: "22px",
-    minHeight: "300px",
-    display: "flex",
-    flexDirection: "column",
   },
 
   courseTitle: {
@@ -153,20 +173,19 @@ const styles = {
   },
 
   info: {
-    color: "#6B7280",
-    fontSize: "13px",
+    color: "#4B5563",
+    fontSize: "14px",
     lineHeight: "1.4",
-    marginTop: "10px",
+    marginTop: "15px",
+    marginBottom: "20px",
   },
 
-  learningButton: {
-    marginTop: "auto",
-    display: "block",
-    textAlign: "center",
+  startButton: {
+    display: "inline-block",
     backgroundColor: "#7C3AED",
     color: "#FFFFFF",
     textDecoration: "none",
-    padding: "11px",
+    padding: "10px 16px",
     borderRadius: "6px",
     fontSize: "14px",
   },
@@ -181,9 +200,18 @@ const styles = {
     textAlign: "center",
   },
 
-  button: {
+  emptyTitle: {
+    marginBottom: "10px",
+  },
+
+  emptyText: {
+    color: "#6B7280",
+    lineHeight: "1.5",
+    marginBottom: "20px",
+  },
+
+  exploreButton: {
     display: "inline-block",
-    marginTop: "15px",
     backgroundColor: "#7C3AED",
     color: "#FFFFFF",
     textDecoration: "none",

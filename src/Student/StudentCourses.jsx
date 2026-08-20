@@ -2,103 +2,96 @@ import React from "react";
 import { Link } from "react-router-dom";
 import { useCourses } from "../Context/CourseContext";
 
-function StudentMyCourses() {
+function StudentCourses() {
 
-  const { enrolledCourses } = useCourses();
+  const {
+    courses,
+    enrollCourse,
+  } = useCourses();
+
 
   return (
     <div style={styles.container}>
 
-      {/* Header */}
+      <h1 style={styles.title}>
+        Available Courses
+      </h1>
 
-      <div style={styles.header}>
-
-        <h1 style={styles.title}>
-          Available Courses
-        </h1>
-
-        <p style={styles.subtitle}>
-          Browse the courses available and enroll in a course you are interested in.
-        </p>
-
-      </div>
+      <p style={styles.subtitle}>
+        Explore courses created by our instructors.
+      </p>
 
 
-      {/* No Courses */}
-
-      {enrolledCourses.length === 0 ? (
+      {courses.length === 0 ? (
 
         <div style={styles.emptyCard}>
 
-          <h2 style={styles.emptyTitle}>
-            No Courses Yet
+          <h2>
+            No Courses Available
           </h2>
 
-          <p style={styles.emptyText}>
-          
-            Explore the available courses and start learning.
+          <p>
+            Courses will appear here when instructors create them.
           </p>
-
-          <Link
-            to="/student/courses"
-            style={styles.browseButton}
-          >
-            Browse Courses
-          </Link>
 
         </div>
 
       ) : (
 
-        /* Enrolled Courses */
+        <div style={styles.grid}>
 
-        <div style={styles.courseGrid}>
-
-          {enrolledCourses.map((course) => (
+          {courses.map((course) => (
 
             <div
               key={course.id}
-              style={styles.courseCard}
+              style={styles.card}
             >
 
               <h2 style={styles.courseTitle}>
                 {course.title}
               </h2>
 
-
               <p style={styles.description}>
                 {course.description}
               </p>
 
+              <p>
+                <strong>Instructor:</strong>{" "}
+                {course.instructor}
+              </p>
 
-              <div style={styles.courseInfo}>
+              <p>
+                <strong>Duration:</strong>{" "}
+                {course.duration}
+              </p>
 
-                <p>
-                  <strong>Instructor:</strong>{" "}
-                  {course.instructor}
-                </p>
+              <p>
+                <strong>Level:</strong>{" "}
+                {course.level}
+              </p>
 
-                <p>
-                  <strong>Duration:</strong>{" "}
-                  {course.duration}
-                </p>
 
-                <p>
-                  <strong>Lessons:</strong>{" "}
-                  {course.lessons}
-                </p>
+              <div style={styles.buttons}>
+
+                <Link
+                  to={`/student/course-details/${course.id}`}
+                  style={styles.detailsButton}
+                >
+                  View Details
+                </Link>
+
+
+                <button
+                  onClick={() => {
+                    enrollCourse(course);
+                    alert("Course enrolled successfully!");
+                  }}
+                  style={styles.enrollButton}
+                >
+                  Enroll
+                </button>
 
               </div>
-
-
-              {/* Start Learning */}
-
-              <Link
-                to={`/student/lessons/${course.id}`}
-                style={styles.learningButton}
-              >
-                Start Learning
-              </Link>
 
             </div>
 
@@ -117,122 +110,74 @@ const styles = {
 
   container: {
     minHeight: "70vh",
-    backgroundColor: "#F9FAFB",
     padding: "40px 50px",
+    backgroundColor: "#F9FAFB",
     fontFamily: "Arial, sans-serif",
-    color: "#111827",
   },
-
-
-  header: {
-    maxWidth: "1100px",
-    margin: "0 auto 30px",
-  },
-
 
   title: {
     color: "#5B21B6",
     fontSize: "30px",
-    marginBottom: "8px",
   },
-
 
   subtitle: {
     color: "#6B7280",
-    fontSize: "15px",
+    marginBottom: "30px",
   },
 
-
-  courseGrid: {
-    maxWidth: "1100px",
-    margin: "auto",
+  grid: {
     display: "grid",
     gridTemplateColumns: "repeat(3, 1fr)",
     gap: "20px",
   },
 
-
-  courseCard: {
+  card: {
     backgroundColor: "#FFFFFF",
     border: "1px solid #E5E7EB",
     borderRadius: "8px",
     padding: "22px",
-    display: "flex",
-    flexDirection: "column",
-    minHeight: "300px",
   },
-
 
   courseTitle: {
     color: "#5B21B6",
     fontSize: "20px",
-    marginBottom: "10px",
   },
-
 
   description: {
     color: "#6B7280",
-    fontSize: "14px",
     lineHeight: "1.5",
   },
 
-
-  courseInfo: {
-    marginTop: "15px",
-    color: "#6B7280",
-    fontSize: "13px",
-    lineHeight: "1.5",
+  buttons: {
+    display: "flex",
+    gap: "10px",
+    marginTop: "20px",
   },
 
+  detailsButton: {
+    backgroundColor: "#EDE9FE",
+    color: "#5B21B6",
+    padding: "9px 14px",
+    borderRadius: "6px",
+    textDecoration: "none",
+  },
 
-  learningButton: {
-    marginTop: "auto",
-    display: "block",
-    textAlign: "center",
+  enrollButton: {
     backgroundColor: "#7C3AED",
     color: "#FFFFFF",
-    textDecoration: "none",
-    padding: "11px",
+    border: "none",
+    padding: "9px 14px",
     borderRadius: "6px",
-    fontSize: "14px",
+    cursor: "pointer",
   },
-
 
   emptyCard: {
-    maxWidth: "600px",
-    margin: "50px auto",
-    backgroundColor: "#FFFFFF",
-    border: "1px solid #E5E7EB",
-    borderRadius: "8px",
-    padding: "40px",
     textAlign: "center",
-  },
-
-
-  emptyTitle: {
-    color: "#5B21B6",
-    marginBottom: "10px",
-  },
-
-
-  emptyText: {
-    color: "#6B7280",
-    lineHeight: "1.5",
-    marginBottom: "20px",
-  },
-
-
-  browseButton: {
-    display: "inline-block",
-    backgroundColor: "#7C3AED",
-    color: "#FFFFFF",
-    textDecoration: "none",
-    padding: "10px 18px",
-    borderRadius: "6px",
-    fontSize: "14px",
+    backgroundColor: "#FFFFFF",
+    padding: "40px",
+    borderRadius: "8px",
   },
 
 };
 
-
-export default StudentMyCourses;
+export default StudentCourses;
