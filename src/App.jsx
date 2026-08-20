@@ -57,6 +57,8 @@ import ManageCourses from "./Instructor/ManageCourses";
 import ManageStudents from "./Instructor/ManageStudents";
 import EditCourse from "./Instructor/EditCourse";
 
+import InstructorProfile from "./Instructor/InstructorProfile";
+
 
 function App() {
 
@@ -313,6 +315,16 @@ function App() {
 
           </ProtectedRoute>
 
+        }
+      />
+      <Route
+        path="/instructor/profile"
+        element={
+          <>
+            <InstructorNavbar />
+            <InstructorProfile />
+            <InstructorFooter />
+          </>
         }
       />
 
