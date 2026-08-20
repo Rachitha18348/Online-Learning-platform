@@ -1,29 +1,118 @@
 import React from "react";
-import { useParams } from "react-router-dom";
+import {
+  Link,
+  useParams,
+} from "react-router-dom";
+
 import { useCourses } from "../Context/CourseContext";
 
+
 function StudentLessons() {
-  const { id } = useParams();
 
-  const { enrolledCourses } = useCourses();
+  const { courseId } =
+    useParams();
 
-  const course = enrolledCourses.find(
-    (item) => item.id === Number(id)
-  );
+
+  const {
+    getCourseById,
+    isEnrolled,
+  } = useCourses();
+
+
+  // =====================================================
+  // Get Course
+  // =====================================================
+
+  const course =
+    getCourseById(courseId);
+
+
+  // =====================================================
+  // Course Not Found
+  // =====================================================
 
   if (!course) {
-    return (
-      <div style={styles.notFound}>
-        <h2>Course Not Found</h2>
 
-        <p>
-          This course is not available in your enrolled courses.
-        </p>
+    return (
+
+      <div style={styles.container}>
+
+        <div style={styles.card}>
+
+          <h1>
+            Course Not Found
+          </h1>
+
+          <p>
+            The course you are looking for does not exist.
+          </p>
+
+
+          <Link
+            to="/student/my-courses"
+            style={styles.button}
+          >
+            Back to My Courses
+          </Link>
+
+        </div>
+
       </div>
+
     );
+
   }
 
+
+  // =====================================================
+  // Check Enrollment
+  // =====================================================
+
+  if (!isEnrolled(courseId)) {
+
+    return (
+
+      <div style={styles.container}>
+
+        <div style={styles.card}>
+
+          <h1>
+            Access Denied
+          </h1>
+
+          <p>
+            You are not enrolled in this course.
+          </p>
+
+
+          <Link
+            to="/student/courses"
+            style={styles.button}
+          >
+            Explore Courses
+          </Link>
+
+        </div>
+
+      </div>
+
+    );
+
+  }
+
+
+  // =====================================================
+  // Lessons
+  // =====================================================
+
+  const lessons =
+    Array.isArray(course.lessons)
+      ? course.lessons
+      : [];
+
+
   return (
+
     <div style={styles.container}>
 
       {/* Course Header */}
@@ -34,28 +123,26 @@ function StudentLessons() {
           {course.title}
         </h1>
 
+
         <p style={styles.description}>
           {course.description}
         </p>
 
-        <div style={styles.courseInfo}>
 
-          <span>
-            <strong>Instructor:</strong>{" "}
-            {course.instructor}
-          </span>
+        <p style={styles.instructor}>
+          <strong>
+            Instructor:
+          </strong>{" "}
+          {course.instructor}
+        </p>
 
-          <span>
-            <strong>Duration:</strong>{" "}
-            {course.duration}
-          </span>
 
-          <span>
-            <strong>Level:</strong>{" "}
-            {course.level}
-          </span>
-
-        </div>
+        <p style={styles.instructor}>
+          <strong>
+            Duration:
+          </strong>{" "}
+          {course.duration}
+        </p>
 
       </div>
 
@@ -64,55 +151,12 @@ function StudentLessons() {
 
       <div style={styles.content}>
 
-        <h2 style={styles.sectionTitle}>
-          Course Lessons
+        <h2 style={styles.heading}>
+          Learning Content
         </h2>
 
 
-        {course.lessons && course.lessons.length > 0 ? (
-
-          <div style={styles.lessonList}>
-
-            {course.lessons.map((lesson, index) => (
-
-              <div
-                key={index}
-                style={styles.lessonCard}
-              >
-
-                <div style={styles.lessonInfo}>
-
-                  <h3 style={styles.lessonTitle}>
-                    Lesson {index + 1}: {lesson.title}
-                  </h3>
-
-                  <p style={styles.lessonDescription}>
-                    {lesson.description}
-                  </p>
-
-                </div>
-
-
-                {lesson.videoUrl && (
-
-                  <a
-                    href={lesson.videoUrl}
-                    target="_blank"
-                    rel="noopener noreferrer"
-                    style={styles.watchButton}
-                  >
-                    Watch Video
-                  </a>
-
-                )}
-
-              </div>
-
-            ))}
-
-          </div>
-
-        ) : (
+        {lessons.length === 0 ? (
 
           <div style={styles.emptyCard}>
 
@@ -121,8 +165,63 @@ function StudentLessons() {
             </h3>
 
             <p>
-              The instructor has not added any lessons yet.
+              The instructor has not added
+              any lessons to this course yet.
             </p>
+
+          </div>
+
+        ) : (
+
+          <div>
+
+            {lessons.map(
+              (lesson, index) => (
+
+                <div
+                  key={
+                    lesson.id || index
+                  }
+                  style={styles.lessonCard}
+                >
+
+                  <h3 style={styles.lessonTitle}>
+
+                    Lesson {index + 1}:{" "}
+
+                    {lesson.title}
+
+                  </h3>
+
+
+                  <p style={styles.lessonDescription}>
+                    {lesson.description}
+                  </p>
+
+
+                  {/* Video */}
+
+                  {lesson.videoUrl && (
+
+                    <div style={styles.videoContainer}>
+
+                      <a
+                        href={lesson.videoUrl}
+                        target="_blank"
+                        rel="noreferrer"
+                        style={styles.videoButton}
+                      >
+                        ▶ Watch Lesson Video
+                      </a>
+
+                    </div>
+
+                  )}
+
+                </div>
+
+              )
+            )}
 
           </div>
 
@@ -130,8 +229,18 @@ function StudentLessons() {
 
       </div>
 
+
+      <Link
+        to="/student/my-courses"
+        style={styles.backButton}
+      >
+        ← Back to My Courses
+      </Link>
+
     </div>
+
   );
+
 }
 
 
@@ -139,14 +248,14 @@ const styles = {
 
   container: {
     minHeight: "70vh",
-    backgroundColor: "#F9FAFB",
     padding: "40px 50px",
+    backgroundColor: "#F9FAFB",
     fontFamily: "Arial, sans-serif",
     color: "#111827",
   },
 
   header: {
-    maxWidth: "1000px",
+    maxWidth: "900px",
     margin: "0 auto 30px",
     backgroundColor: "#FFFFFF",
     padding: "30px",
@@ -156,7 +265,6 @@ const styles = {
 
   title: {
     color: "#5B21B6",
-    fontSize: "30px",
     marginBottom: "10px",
   },
 
@@ -165,62 +273,51 @@ const styles = {
     lineHeight: "1.6",
   },
 
-  courseInfo: {
-    display: "flex",
-    gap: "30px",
-    flexWrap: "wrap",
-    marginTop: "20px",
+  instructor: {
+    color: "#4B5563",
     fontSize: "14px",
   },
 
   content: {
-    maxWidth: "1000px",
+    maxWidth: "900px",
     margin: "auto",
   },
 
-  sectionTitle: {
-    color: "#111827",
+  heading: {
+    color: "#5B21B6",
     marginBottom: "20px",
-  },
-
-  lessonList: {
-    display: "flex",
-    flexDirection: "column",
-    gap: "15px",
   },
 
   lessonCard: {
     backgroundColor: "#FFFFFF",
     border: "1px solid #E5E7EB",
     borderRadius: "8px",
-    padding: "20px",
-    display: "flex",
-    justifyContent: "space-between",
-    alignItems: "center",
-    gap: "20px",
-  },
-
-  lessonInfo: {
-    flex: 1,
+    padding: "25px",
+    marginBottom: "20px",
   },
 
   lessonTitle: {
     color: "#5B21B6",
-    marginBottom: "8px",
+    marginBottom: "10px",
   },
 
   lessonDescription: {
     color: "#6B7280",
-    lineHeight: "1.5",
+    lineHeight: "1.6",
+    marginBottom: "20px",
   },
 
-  watchButton: {
+  videoContainer: {
+    marginTop: "15px",
+  },
+
+  videoButton: {
+    display: "inline-block",
     backgroundColor: "#7C3AED",
     color: "#FFFFFF",
     textDecoration: "none",
     padding: "10px 16px",
     borderRadius: "6px",
-    whiteSpace: "nowrap",
   },
 
   emptyCard: {
@@ -229,16 +326,36 @@ const styles = {
     borderRadius: "8px",
     padding: "40px",
     textAlign: "center",
-    color: "#6B7280",
   },
 
-  notFound: {
-    minHeight: "70vh",
-    display: "flex",
-    flexDirection: "column",
-    justifyContent: "center",
-    alignItems: "center",
-    fontFamily: "Arial, sans-serif",
+  card: {
+    maxWidth: "600px",
+    margin: "60px auto",
+    backgroundColor: "#FFFFFF",
+    padding: "40px",
+    borderRadius: "8px",
+    textAlign: "center",
+  },
+
+  button: {
+    display: "inline-block",
+    backgroundColor: "#7C3AED",
+    color: "#FFFFFF",
+    textDecoration: "none",
+    padding: "10px 18px",
+    borderRadius: "6px",
+    marginTop: "15px",
+  },
+
+  backButton: {
+    display: "block",
+    width: "fit-content",
+    margin: "30px auto",
+    backgroundColor: "#EDE9FE",
+    color: "#5B21B6",
+    textDecoration: "none",
+    padding: "10px 18px",
+    borderRadius: "6px",
   },
 
 };

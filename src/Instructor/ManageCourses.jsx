@@ -2,12 +2,17 @@ import React from "react";
 import { Link } from "react-router-dom";
 import { useCourses } from "../Context/CourseContext";
 
+
 function ManageCourses() {
 
   const {
-    courses,
+    getInstructorCourses,
     deleteCourse,
   } = useCourses();
+
+
+  const courses =
+    getInstructorCourses();
 
 
   function handleDelete(courseId) {
@@ -22,7 +27,9 @@ function ManageCourses() {
 
       deleteCourse(courseId);
 
-      alert("Course deleted successfully.");
+      alert(
+        "Course deleted successfully."
+      );
 
     }
 
@@ -30,6 +37,7 @@ function ManageCourses() {
 
 
   return (
+
     <div style={styles.container}>
 
       <div style={styles.header}>
@@ -126,8 +134,6 @@ function ManageCourses() {
 
               <div style={styles.actions}>
 
-                {/* EDIT */}
-
                 <Link
                   to={`/instructor/edit-course/${course.id}`}
                   style={styles.editButton}
@@ -135,8 +141,6 @@ function ManageCourses() {
                   Edit
                 </Link>
 
-
-                {/* DELETE */}
 
                 <button
                   onClick={() =>
@@ -158,7 +162,9 @@ function ManageCourses() {
       )}
 
     </div>
+
   );
+
 }
 
 
@@ -182,7 +188,6 @@ const styles = {
   title: {
     color: "#5B21B6",
     fontSize: "30px",
-    marginBottom: "8px",
   },
 
   subtitle: {

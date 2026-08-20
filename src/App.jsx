@@ -3,10 +3,8 @@ import React from "react";
 import {
   Routes,
   Route,
-  Navigate,
   Link,
 } from "react-router-dom";
-
 
 // =========================
 // Authentication
@@ -18,7 +16,6 @@ import InstructorLogin from "./Auth/InstructorLogin";
 
 import ProtectedRoute from "./ProtectedRoute";
 
-
 // =========================
 // Student Components
 // =========================
@@ -26,14 +23,12 @@ import ProtectedRoute from "./ProtectedRoute";
 import StudentNavbar from "./components/StudentNavbar";
 import StudentFooter from "./components/StudentFooter";
 
-
 // =========================
 // Instructor Components
 // =========================
 
 import InstructorNavbar from "./Instructor/InstructorNavbar";
 import InstructorFooter from "./Instructor/InstructorFooter";
-
 
 // =========================
 // Student Pages
@@ -47,7 +42,6 @@ import StudentLessons from "./Student/StudentLessons";
 import StudentQuiz from "./Student/StudentQuiz";
 import StudentProfile from "./Student/StudentProfile";
 
-
 // =========================
 // Instructor Pages
 // =========================
@@ -57,16 +51,12 @@ import CreateCourse from "./Instructor/CreateCourse";
 import ManageCourses from "./Instructor/ManageCourses";
 import ManageStudents from "./Instructor/ManageStudents";
 import EditCourse from "./Instructor/EditCourse";
-
 import InstructorProfile from "./Instructor/InstructorProfile";
 
 
 function App() {
-
   return (
-
     <Routes>
-
 
       {/* =========================
           ROLE SELECTION
@@ -87,7 +77,6 @@ function App() {
         element={<StudentLogin />}
       />
 
-
       <Route
         path="/instructor/login"
         element={<InstructorLogin />}
@@ -95,245 +84,211 @@ function App() {
 
 
       {/* =========================
-          STUDENT ROUTES
+          STUDENT DASHBOARD
       ========================= */}
-
 
       <Route
         path="/student/dashboard"
         element={
-
           <ProtectedRoute role="student">
-
             <StudentNavbar />
-
             <StudentDashboard />
-
             <StudentFooter />
-
           </ProtectedRoute>
-
-        }
-      />
-
-
-      <Route
-        path="/student/courses"
-        element={
-
-          <ProtectedRoute role="student">
-
-            <StudentNavbar />
-
-            <StudentCourses />
-
-            <StudentFooter />
-
-          </ProtectedRoute>
-
-        }
-      />
-
-
-      <Route
-        path="/student/course-details/:id"
-        element={
-
-          <ProtectedRoute role="student">
-
-            <StudentNavbar />
-
-            <StudentCourseDetails />
-
-            <StudentFooter />
-
-          </ProtectedRoute>
-
-        }
-      />
-
-
-      <Route
-        path="/student/my-courses"
-        element={
-
-          <ProtectedRoute role="student">
-
-            <StudentNavbar />
-
-            <StudentMyCourses />
-
-            <StudentFooter />
-
-          </ProtectedRoute>
-
-        }
-      />
-
-
-      <Route
-        path="/student/lessons/:id"
-        element={
-
-          <ProtectedRoute role="student">
-
-            <StudentNavbar />
-
-            <StudentLessons />
-
-            <StudentFooter />
-
-          </ProtectedRoute>
-
-        }
-      />
-
-
-      <Route
-        path="/student/quiz/:id"
-        element={
-
-          <ProtectedRoute role="student">
-
-            <StudentNavbar />
-
-            <StudentQuiz />
-
-            <StudentFooter />
-
-          </ProtectedRoute>
-
-        }
-      />
-
-
-      <Route
-        path="/student/profile"
-        element={
-
-          <ProtectedRoute role="student">
-
-            <StudentNavbar />
-
-            <StudentProfile />
-
-            <StudentFooter />
-
-          </ProtectedRoute>
-
         }
       />
 
 
       {/* =========================
-          INSTRUCTOR ROUTES
+          AVAILABLE COURSES
       ========================= */}
 
+      <Route
+        path="/student/courses"
+        element={
+          <ProtectedRoute role="student">
+            <StudentNavbar />
+            <StudentCourses />
+            <StudentFooter />
+          </ProtectedRoute>
+        }
+      />
+
+
+      {/* =========================
+          COURSE DETAILS
+      ========================= */}
+
+      <Route
+        path="/student/course-details/:id"
+        element={
+          <ProtectedRoute role="student">
+            <StudentNavbar />
+            <StudentCourseDetails />
+            <StudentFooter />
+          </ProtectedRoute>
+        }
+      />
+
+
+      {/* =========================
+          MY COURSES
+      ========================= */}
+
+      <Route
+        path="/student/my-courses"
+        element={
+          <ProtectedRoute role="student">
+            <StudentNavbar />
+            <StudentMyCourses />
+            <StudentFooter />
+          </ProtectedRoute>
+        }
+      />
+
+
+      {/* =========================
+          STUDENT LESSONS
+          IMPORTANT:
+          Parameter is courseId
+      ========================= */}
+
+      <Route
+        path="/student/lessons/:courseId"
+        element={
+          <ProtectedRoute role="student">
+            <StudentNavbar />
+            <StudentLessons />
+            <StudentFooter />
+          </ProtectedRoute>
+        }
+      />
+
+
+      {/* =========================
+          STUDENT QUIZ
+      ========================= */}
+
+      <Route
+        path="/student/quiz/:id"
+        element={
+          <ProtectedRoute role="student">
+            <StudentNavbar />
+            <StudentQuiz />
+            <StudentFooter />
+          </ProtectedRoute>
+        }
+      />
+
+
+      {/* =========================
+          STUDENT PROFILE
+      ========================= */}
+
+      <Route
+        path="/student/profile"
+        element={
+          <ProtectedRoute role="student">
+            <StudentNavbar />
+            <StudentProfile />
+            <StudentFooter />
+          </ProtectedRoute>
+        }
+      />
+
+
+      {/* =========================
+          INSTRUCTOR DASHBOARD
+      ========================= */}
 
       <Route
         path="/instructor/dashboard"
         element={
-
           <ProtectedRoute role="instructor">
-
             <InstructorNavbar />
-
             <InstructorDashboard />
-
             <InstructorFooter />
-
           </ProtectedRoute>
-
         }
       />
 
+
+      {/* =========================
+          CREATE COURSE
+      ========================= */}
 
       <Route
         path="/instructor/create-course"
         element={
-
           <ProtectedRoute role="instructor">
-
             <InstructorNavbar />
-
             <CreateCourse />
-
             <InstructorFooter />
-
           </ProtectedRoute>
-
         }
       />
 
+
+      {/* =========================
+          MANAGE COURSES
+      ========================= */}
 
       <Route
         path="/instructor/manage-courses"
         element={
-
           <ProtectedRoute role="instructor">
-
             <InstructorNavbar />
-
             <ManageCourses />
-
             <InstructorFooter />
-
           </ProtectedRoute>
-
         }
       />
 
+
+      {/* =========================
+          EDIT COURSE
+      ========================= */}
 
       <Route
         path="/instructor/edit-course/:id"
         element={
-
           <ProtectedRoute role="instructor">
-
             <InstructorNavbar />
-
             <EditCourse />
-
             <InstructorFooter />
-
           </ProtectedRoute>
-
         }
       />
 
+
+      {/* =========================
+          MANAGE STUDENTS
+      ========================= */}
 
       <Route
         path="/instructor/students"
         element={
-
           <ProtectedRoute role="instructor">
-
             <InstructorNavbar />
-
             <ManageStudents />
-
             <InstructorFooter />
-
           </ProtectedRoute>
-
         }
       />
 
 
+      {/* =========================
+          INSTRUCTOR PROFILE
+      ========================= */}
+
       <Route
         path="/instructor/profile"
         element={
-
           <ProtectedRoute role="instructor">
-
             <InstructorNavbar />
-
             <InstructorProfile />
-
             <InstructorFooter />
-
           </ProtectedRoute>
-
         }
       />
 
@@ -345,7 +300,6 @@ function App() {
       <Route
         path="*"
         element={
-
           <div
             style={{
               minHeight: "70vh",
@@ -369,7 +323,6 @@ function App() {
               404
             </h1>
 
-
             <h2
               style={{
                 color: "#111827",
@@ -379,7 +332,6 @@ function App() {
               Page Not Found
             </h2>
 
-
             <p
               style={{
                 color: "#6B7280",
@@ -388,7 +340,6 @@ function App() {
             >
               The page you are looking for does not exist.
             </p>
-
 
             <Link
               to="/"
@@ -405,14 +356,11 @@ function App() {
             </Link>
 
           </div>
-
         }
       />
 
     </Routes>
-
   );
 }
-
 
 export default App;

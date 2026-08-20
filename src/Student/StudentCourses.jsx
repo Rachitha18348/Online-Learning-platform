@@ -1,32 +1,42 @@
-import React, { useEffect, useState } from "react";
+import React, {
+  useEffect,
+  useState,
+} from "react";
+
 import { Link } from "react-router-dom";
+
 import { useCourses } from "../Context/CourseContext";
+
 
 function StudentCourses() {
 
   const {
     courses,
     enrollCourse,
+    isEnrolled,
   } = useCourses();
 
 
-  const [search, setSearch] = useState("");
+  const [search, setSearch] =
+    useState("");
+
 
   const [debouncedSearch, setDebouncedSearch] =
     useState("");
 
 
-  // =========================
-  // Debouncing
-  // =========================
+  // =====================================================
+  // DEBOUNCING
+  // =====================================================
 
   useEffect(() => {
 
-    const timer = setTimeout(() => {
+    const timer =
+      setTimeout(() => {
 
-      setDebouncedSearch(search);
+        setDebouncedSearch(search);
 
-    }, 500);
+      }, 500);
 
 
     return () => {
@@ -38,55 +48,88 @@ function StudentCourses() {
   }, [search]);
 
 
-  // =========================
-  // Filter Courses
-  // =========================
+  // =====================================================
+  // FILTER COURSES
+  // =====================================================
 
-  const filteredCourses = courses.filter((course) => {
+  const filteredCourses =
+    courses.filter((course) => {
 
-    const searchText =
-      debouncedSearch.toLowerCase().trim();
+      const searchText =
+        debouncedSearch
+          .toLowerCase()
+          .trim();
 
 
-    return (
+      return (
 
-      course.title
-        ?.toLowerCase()
-        .includes(searchText)
+        course.title
+          ?.toLowerCase()
+          .includes(searchText)
 
-      ||
+        ||
 
-      course.description
-        ?.toLowerCase()
-        .includes(searchText)
+        course.description
+          ?.toLowerCase()
+          .includes(searchText)
 
-      ||
+        ||
 
-      course.instructor
-        ?.toLowerCase()
-        .includes(searchText)
+        course.instructor
+          ?.toLowerCase()
+          .includes(searchText)
 
-      ||
+        ||
 
-      course.level
-        ?.toLowerCase()
-        .includes(searchText)
+        course.level
+          ?.toLowerCase()
+          .includes(searchText)
 
-      ||
+        ||
 
-      course.topics
-        ?.toLowerCase()
-        .includes(searchText)
+        course.topics
+          ?.toLowerCase()
+          .includes(searchText)
 
-    );
+      );
 
-  });
+    });
+
+
+  // =====================================================
+  // ENROLL
+  // =====================================================
+
+  function handleEnroll(course) {
+
+    if (isEnrolled(course.id)) {
+
+      alert(
+        "You are already enrolled in this course."
+      );
+
+      return;
+    }
+
+
+    const success =
+      enrollCourse(course);
+
+
+    if (success) {
+
+      alert(
+        "Course enrolled successfully!"
+      );
+
+    }
+
+  }
 
 
   return (
 
     <div style={styles.container}>
-
 
       <h1 style={styles.title}>
         Available Courses
@@ -98,9 +141,7 @@ function StudentCourses() {
       </p>
 
 
-      {/* =========================
-          Search
-      ========================= */}
+      {/* SEARCH */}
 
       <div style={styles.searchContainer}>
 
@@ -117,9 +158,7 @@ function StudentCourses() {
       </div>
 
 
-      {/* =========================
-          No Courses Available
-      ========================= */}
+      {/* NO COURSES */}
 
       {courses.length === 0 ? (
 
@@ -130,17 +169,13 @@ function StudentCourses() {
           </h2>
 
           <p>
-            Courses will appear here when instructors create them.
+            Courses will appear here when instructors
+            create them.
           </p>
 
         </div>
 
-
       ) : filteredCourses.length === 0 ? (
-
-        /* =========================
-           Search Not Found
-        ========================= */
 
         <div style={styles.emptyCard}>
 
@@ -161,80 +196,104 @@ function StudentCourses() {
 
         </div>
 
-
       ) : (
-
-        /* =========================
-           Display Courses
-        ========================= */
 
         <div style={styles.grid}>
 
-          {filteredCourses.map((course) => (
+          {filteredCourses.map((course) => {
 
-            <div
-              key={course.id}
-              style={styles.card}
-            >
-
-              <h2 style={styles.courseTitle}>
-                {course.title}
-              </h2>
+            const alreadyEnrolled =
+              isEnrolled(course.id);
 
 
-              <p style={styles.description}>
-                {course.description}
-              </p>
+            return (
+
+              <div
+                key={course.id}
+                style={styles.card}
+              >
+
+                <h2 style={styles.courseTitle}>
+                  {course.title}
+                </h2>
 
 
-              <p>
-                <strong>Instructor:</strong>{" "}
-                {course.instructor}
-              </p>
+                <p style={styles.description}>
+                  {course.description}
+                </p>
 
 
-              <p>
-                <strong>Duration:</strong>{" "}
-                {course.duration}
-              </p>
+                <p>
+                  <strong>
+                    Instructor:
+                  </strong>{" "}
+                  {course.instructor}
+                </p>
 
 
-              <p>
-                <strong>Level:</strong>{" "}
-                {course.level}
-              </p>
+                <p>
+                  <strong>
+                    Duration:
+                  </strong>{" "}
+                  {course.duration}
+                </p>
 
 
-              <div style={styles.buttons}>
-
-                <Link
-                  to={`/student/course-details/${course.id}`}
-                  style={styles.detailsButton}
-                >
-                  View Details
-                </Link>
+                <p>
+                  <strong>
+                    Level:
+                  </strong>{" "}
+                  {course.level}
+                </p>
 
 
-                <button
-                  onClick={() => {
+                <p>
+                  <strong>
+                    Lessons:
+                  </strong>{" "}
+                  {course.lessons?.length || 0}
+                </p>
 
-                    enrollCourse(course);
 
-                    alert(
-                      "Course enrolled successfully!"
-                    );
+                <div style={styles.buttons}>
 
-                  }}
-                  style={styles.enrollButton}
-                >
-                  Enroll
-                </button>
+                  <Link
+                    to={`/student/course-details/${course.id}`}
+                    style={styles.detailsButton}
+                  >
+                    View Details
+                  </Link>
+
+
+                  {alreadyEnrolled ? (
+
+                    <Link
+                      to="/student/my-courses"
+                      style={styles.enrolledButton}
+                    >
+                      Enrolled
+                    </Link>
+
+                  ) : (
+
+                    <button
+                      onClick={() =>
+                        handleEnroll(course)
+                      }
+                      style={styles.enrollButton}
+                    >
+                      Enroll
+                    </button>
+
+                  )}
+
+                </div>
 
               </div>
 
-            </div>
+            );
 
-          ))}
+          })}
 
         </div>
 
@@ -255,24 +314,20 @@ const styles = {
     fontFamily: "Arial, sans-serif",
   },
 
-
   title: {
     color: "#5B21B6",
     fontSize: "30px",
   },
-
 
   subtitle: {
     color: "#6B7280",
     marginBottom: "20px",
   },
 
-
   searchContainer: {
     marginBottom: "30px",
     maxWidth: "500px",
   },
-
 
   searchInput: {
     width: "100%",
@@ -281,16 +336,14 @@ const styles = {
     border: "1px solid #D1D5DB",
     borderRadius: "8px",
     fontSize: "15px",
-    outline: "none",
   },
-
 
   grid: {
     display: "grid",
-    gridTemplateColumns: "repeat(3, 1fr)",
+    gridTemplateColumns:
+      "repeat(3, 1fr)",
     gap: "20px",
   },
-
 
   card: {
     backgroundColor: "#FFFFFF",
@@ -299,25 +352,21 @@ const styles = {
     padding: "22px",
   },
 
-
   courseTitle: {
     color: "#5B21B6",
     fontSize: "20px",
   },
-
 
   description: {
     color: "#6B7280",
     lineHeight: "1.5",
   },
 
-
   buttons: {
     display: "flex",
     gap: "10px",
     marginTop: "20px",
   },
-
 
   detailsButton: {
     backgroundColor: "#EDE9FE",
@@ -326,7 +375,6 @@ const styles = {
     borderRadius: "6px",
     textDecoration: "none",
   },
-
 
   enrollButton: {
     backgroundColor: "#7C3AED",
@@ -337,6 +385,13 @@ const styles = {
     cursor: "pointer",
   },
 
+  enrolledButton: {
+    backgroundColor: "#EDE9FE",
+    color: "#5B21B6",
+    padding: "9px 14px",
+    borderRadius: "6px",
+    textDecoration: "none",
+  },
 
   emptyCard: {
     textAlign: "center",
@@ -344,7 +399,6 @@ const styles = {
     padding: "40px",
     borderRadius: "8px",
   },
-
 
   clearButton: {
     marginTop: "15px",

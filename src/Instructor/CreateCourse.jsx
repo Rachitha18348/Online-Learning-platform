@@ -2,96 +2,235 @@ import React, { useState } from "react";
 import { useNavigate } from "react-router-dom";
 import { useCourses } from "../Context/CourseContext";
 
+
 function CreateCourse() {
 
-  const { createCourse } = useCourses();
-  const navigate = useNavigate();
+  const { createCourse } =
+    useCourses();
 
-  const [course, setCourse] = useState({
-    title: "",
-    description: "",
-    duration: "",
-    instructor: "",
-    email: "",
-    level: "",
-    topics: "",
-    lessons: [],
-  });
+  const navigate =
+    useNavigate();
 
-  const [lesson, setLesson] = useState({
-    title: "",
-    description: "",
-    videoUrl: "",
-  });
 
+  // =====================================================
+  // Course State
+  // =====================================================
+
+  const [course, setCourse] =
+    useState({
+
+      title: "",
+      description: "",
+      duration: "",
+      level: "",
+      topics: "",
+      lessons: [],
+
+    });
+
+
+  // =====================================================
+  // Lesson State
+  // =====================================================
+
+  const [lesson, setLesson] =
+    useState({
+
+      title: "",
+      description: "",
+      videoUrl: "",
+
+    });
+
+
+  // =====================================================
+  // Course Change
+  // =====================================================
 
   function handleCourseChange(event) {
 
-    const { name, value } = event.target;
+    const {
+      name,
+      value,
+    } = event.target;
 
-    setCourse({
-      ...course,
-      [name]: value,
-    });
+
+    setCourse(
+      (previousCourse) => ({
+
+        ...previousCourse,
+
+        [name]: value,
+
+      })
+    );
+
   }
 
+
+  // =====================================================
+  // Lesson Change
+  // =====================================================
 
   function handleLessonChange(event) {
 
-    const { name, value } = event.target;
+    const {
+      name,
+      value,
+    } = event.target;
 
-    setLesson({
-      ...lesson,
-      [name]: value,
-    });
+
+    setLesson(
+      (previousLesson) => ({
+
+        ...previousLesson,
+
+        [name]: value,
+
+      })
+    );
+
   }
 
+
+  // =====================================================
+  // Add Lesson
+  // =====================================================
 
   function addLesson() {
 
     if (
-      lesson.title === "" ||
-      lesson.description === "" ||
-      lesson.videoUrl === ""
+      lesson.title.trim() === "" ||
+      lesson.description.trim() === "" ||
+      lesson.videoUrl.trim() === ""
     ) {
-      alert("Please fill all lesson details.");
+
+      alert(
+        "Please fill all lesson details."
+      );
+
       return;
     }
 
-    setCourse({
-      ...course,
-      lessons: [
-        ...course.lessons,
-        lesson,
-      ],
-    });
+
+    const newLesson = {
+
+      id: Date.now(),
+
+      title:
+        lesson.title.trim(),
+
+      description:
+        lesson.description.trim(),
+
+      videoUrl:
+        lesson.videoUrl.trim(),
+
+    };
+
+
+    setCourse(
+      (previousCourse) => ({
+
+        ...previousCourse,
+
+        lessons: [
+
+          ...previousCourse.lessons,
+
+          newLesson,
+
+        ],
+
+      })
+    );
+
 
     setLesson({
+
       title: "",
       description: "",
       videoUrl: "",
+
     });
+
+
+    alert("Lesson added successfully.");
+
   }
 
+
+  // =====================================================
+  // Remove Lesson
+  // =====================================================
+
+  function removeLesson(lessonId) {
+
+    setCourse(
+      (previousCourse) => ({
+
+        ...previousCourse,
+
+        lessons:
+          previousCourse.lessons.filter(
+            (item) =>
+              item.id !== lessonId
+          ),
+
+      })
+    );
+
+  }
+
+
+  // =====================================================
+  // Submit
+  // =====================================================
 
   function handleSubmit(event) {
 
     event.preventDefault();
 
-    if (course.lessons.length === 0) {
-      alert("Please add at least one lesson.");
+
+    if (
+      course.lessons.length === 0
+    ) {
+
+      alert(
+        "Please add at least one lesson."
+      );
+
       return;
     }
 
-    createCourse(course);
 
-    alert("Course created successfully!");
+    const createdCourse =
+      createCourse(course);
 
-    navigate("/instructor/manage-courses");
+
+    if (!createdCourse) {
+      return;
+    }
+
+
+    alert(
+      "Course created successfully!"
+    );
+
+
+    navigate(
+      "/instructor/manage-courses"
+    );
+
   }
 
 
+  // =====================================================
+  // JSX
+  // =====================================================
+
   return (
+
     <div style={styles.container}>
 
       <div style={styles.header}>
@@ -101,7 +240,8 @@ function CreateCourse() {
         </h1>
 
         <p style={styles.subtitle}>
-          Create a course and add learning content for students.
+          Create a course and add learning
+          content for students.
         </p>
 
       </div>
@@ -175,48 +315,6 @@ function CreateCourse() {
         </div>
 
 
-        {/* Instructor */}
-
-        <div style={styles.formGroup}>
-
-          <label style={styles.label}>
-            Instructor Name
-          </label>
-
-          <input
-            type="text"
-            name="instructor"
-            value={course.instructor}
-            onChange={handleCourseChange}
-            placeholder="Enter instructor name"
-            style={styles.input}
-            required
-          />
-
-        </div>
-
-
-        {/* Email */}
-
-        <div style={styles.formGroup}>
-
-          <label style={styles.label}>
-            Instructor Email
-          </label>
-
-          <input
-            type="email"
-            name="email"
-            value={course.email}
-            onChange={handleCourseChange}
-            placeholder="Enter instructor email"
-            style={styles.input}
-            required
-          />
-
-        </div>
-
-
         {/* Level */}
 
         <div style={styles.formGroup}>
@@ -275,9 +373,9 @@ function CreateCourse() {
         </div>
 
 
-        {/* =========================
+        {/* =================================================
             LESSON SECTION
-        ========================= */}
+        ================================================= */}
 
         <div style={styles.lessonSection}>
 
@@ -286,7 +384,8 @@ function CreateCourse() {
           </h2>
 
           <p style={styles.lessonText}>
-            Add lessons and their video links for students.
+            Add lessons and video links
+            for students.
           </p>
 
 
@@ -322,7 +421,7 @@ function CreateCourse() {
               name="description"
               value={lesson.description}
               onChange={handleLessonChange}
-              placeholder="What will students learn in this lesson?"
+              placeholder="What will students learn?"
               rows="3"
               style={styles.textarea}
             />
@@ -369,24 +468,55 @@ function CreateCourse() {
                 Added Lessons
               </h3>
 
-              {course.lessons.map((item, index) => (
 
-                <div
-                  key={index}
-                  style={styles.lessonCard}
-                >
+              {course.lessons.map(
+                (item, index) => (
 
-                  <strong>
-                    Lesson {index + 1}: {item.title}
-                  </strong>
+                  <div
+                    key={item.id}
+                    style={styles.lessonCard}
+                  >
 
-                  <p>
-                    {item.description}
-                  </p>
+                    <div
+                      style={
+                        styles.lessonCardHeader
+                      }
+                    >
 
-                </div>
+                      <strong>
+                        Lesson {index + 1}:{" "}
+                        {item.title}
+                      </strong>
 
-              ))}
+
+                      <button
+                        type="button"
+                        onClick={() =>
+                          removeLesson(item.id)
+                        }
+                        style={
+                          styles.removeButton
+                        }
+                      >
+                        Remove
+                      </button>
+
+                    </div>
+
+
+                    <p>
+                      {item.description}
+                    </p>
+
+
+                    <small>
+                      {item.videoUrl}
+                    </small>
+
+                  </div>
+
+                )
+              )}
 
             </div>
 
@@ -395,7 +525,7 @@ function CreateCourse() {
         </div>
 
 
-        {/* Create Course */}
+        {/* Create */}
 
         <button
           type="submit"
@@ -407,9 +537,15 @@ function CreateCourse() {
       </form>
 
     </div>
+
   );
+
 }
 
+
+// =====================================================
+// Styles
+// =====================================================
 
 const styles = {
 
@@ -429,12 +565,10 @@ const styles = {
   title: {
     color: "#5B21B6",
     fontSize: "30px",
-    marginBottom: "8px",
   },
 
   subtitle: {
     color: "#6B7280",
-    fontSize: "15px",
   },
 
   form: {
@@ -453,7 +587,6 @@ const styles = {
   label: {
     display: "block",
     marginBottom: "7px",
-    fontSize: "14px",
     fontWeight: "600",
   },
 
@@ -487,13 +620,10 @@ const styles = {
 
   lessonHeading: {
     color: "#5B21B6",
-    marginBottom: "8px",
   },
 
   lessonText: {
     color: "#6B7280",
-    fontSize: "14px",
-    marginBottom: "25px",
   },
 
   addLessonButton: {
@@ -515,6 +645,21 @@ const styles = {
     borderRadius: "6px",
     padding: "15px",
     marginTop: "10px",
+  },
+
+  lessonCardHeader: {
+    display: "flex",
+    justifyContent: "space-between",
+    alignItems: "center",
+  },
+
+  removeButton: {
+    backgroundColor: "#FEE2E2",
+    color: "#B91C1C",
+    border: "none",
+    padding: "6px 10px",
+    borderRadius: "5px",
+    cursor: "pointer",
   },
 
   createButton: {
