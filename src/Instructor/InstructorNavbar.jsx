@@ -29,7 +29,7 @@ function InstructorNavbar() {
         to="/instructor/dashboard"
         style={styles.logo}
       >
-        LearnHub-Online Learning Platform
+        LearnHub
       </Link>
 
 

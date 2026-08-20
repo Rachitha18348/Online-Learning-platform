@@ -13,6 +13,9 @@ function RoleSelection() {
       <div style={styles.card}>
 
         <h1 style={styles.title}>
+            LearnHub
+            <br/>
+            <hr/>
           Online Learning Platform
         </h1>
 
