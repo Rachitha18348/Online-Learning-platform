@@ -4,6 +4,7 @@ import {
   Routes,
   Route,
   Navigate,
+  Link,
 } from "react-router-dom";
 
 
@@ -317,14 +318,22 @@ function App() {
 
         }
       />
+
+
       <Route
         path="/instructor/profile"
         element={
-          <>
+
+          <ProtectedRoute role="instructor">
+
             <InstructorNavbar />
+
             <InstructorProfile />
+
             <InstructorFooter />
-          </>
+
+          </ProtectedRoute>
+
         }
       />
 
@@ -339,19 +348,61 @@ function App() {
 
           <div
             style={{
-              padding: "50px",
+              minHeight: "70vh",
+              display: "flex",
+              flexDirection: "column",
+              justifyContent: "center",
+              alignItems: "center",
               textAlign: "center",
-              fontFamily: "Arial",
+              fontFamily: "Arial, sans-serif",
+              backgroundColor: "#F9FAFB",
             }}
           >
 
-            <h1>
+            <h1
+              style={{
+                fontSize: "60px",
+                color: "#5B21B6",
+                marginBottom: "10px",
+              }}
+            >
               404
             </h1>
 
-            <p>
-              Page not found.
+
+            <h2
+              style={{
+                color: "#111827",
+                marginBottom: "10px",
+              }}
+            >
+              Page Not Found
+            </h2>
+
+
+            <p
+              style={{
+                color: "#6B7280",
+                marginBottom: "25px",
+              }}
+            >
+              The page you are looking for does not exist.
             </p>
+
+
+            <Link
+              to="/"
+              style={{
+                backgroundColor: "#7C3AED",
+                color: "#FFFFFF",
+                padding: "11px 20px",
+                borderRadius: "6px",
+                textDecoration: "none",
+                fontSize: "14px",
+              }}
+            >
+              Return to Home
+            </Link>
 
           </div>
 

@@ -4,187 +4,279 @@ import React, {
   useState,
 } from "react";
 
-const CourseContext = createContext(null);
+
+const CourseContext = createContext();
 
 
-export function CourseProvider({ children }) {
+function getStoredCourses() {
 
-  const [courses, setCourses] = useState(() => {
+  const storedCourses =
+    localStorage.getItem("courses");
 
-    const savedCourses =
-      localStorage.getItem("courses");
+  if (storedCourses) {
 
-    return savedCourses
-      ? JSON.parse(savedCourses)
-      : [];
+    try {
 
-  });
+      return JSON.parse(storedCourses);
 
+    } catch (error) {
 
-  const [enrolledCourses, setEnrolledCourses] =
-    useState(() => {
-
-      const savedCourses =
-        localStorage.getItem("enrolledCourses");
-
-      return savedCourses
-        ? JSON.parse(savedCourses)
-        : [];
-
-    });
-
-
-  // =========================
-  // ADD COURSE
-  // =========================
-
-  function addCourse(course) {
-
-    setCourses((previousCourses) => {
-
-      const updatedCourses = [
-        ...previousCourses,
-        course,
-      ];
-
-      localStorage.setItem(
-        "courses",
-        JSON.stringify(updatedCourses)
+      console.log(
+        "Error reading courses:",
+        error
       );
-
-      return updatedCourses;
-
-    });
-
-  }
-
-
-  // =========================
-  // UPDATE COURSE
-  // =========================
-
-  function updateCourse(updatedCourse) {
-
-    setCourses((previousCourses) => {
-
-      const updatedCourses =
-        previousCourses.map((course) =>
-
-          course.id === updatedCourse.id
-            ? updatedCourse
-            : course
-
-        );
-
-
-      localStorage.setItem(
-        "courses",
-        JSON.stringify(updatedCourses)
-      );
-
-
-      return updatedCourses;
-
-    });
-
-  }
-
-
-  // =========================
-  // DELETE COURSE
-  // =========================
-
-  function deleteCourse(courseId) {
-
-    setCourses((previousCourses) => {
-
-      const updatedCourses =
-        previousCourses.filter(
-          (course) =>
-            course.id !== courseId
-        );
-
-
-      localStorage.setItem(
-        "courses",
-        JSON.stringify(updatedCourses)
-      );
-
-
-      return updatedCourses;
-
-    });
-
-  }
-
-
-  // =========================
-  // ENROLL COURSE
-  // =========================
-
-  function enrollCourse(course) {
-
-    const loggedInUser =
-      JSON.parse(
-        localStorage.getItem("loggedInUser")
-      );
-
-
-    if (!loggedInUser) {
-
-      alert(
-        "Please login before enrolling."
-      );
-
-      return;
 
     }
 
+  }
+
+
+  return [];
+
+}
+
+
+function getStoredEnrollments() {
+
+  const storedEnrollments =
+    localStorage.getItem(
+      "enrolledCourses"
+    );
+
+  if (storedEnrollments) {
+
+    try {
+
+      return JSON.parse(
+        storedEnrollments
+      );
+
+    } catch (error) {
+
+      console.log(
+        "Error reading enrolled courses:",
+        error
+      );
+
+    }
+
+  }
+
+
+  return [];
+
+}
+
+
+export function CourseProvider({
+  children,
+}) {
+
+  const [courses, setCourses] =
+    useState(getStoredCourses);
+
+
+  const [enrolledCourses, setEnrolledCourses] =
+    useState(getStoredEnrollments);
+
+
+  // =========================
+  // Create Course
+  // =========================
+
+  function createCourse(courseData) {
+
+    const newCourse = {
+
+      id: Date.now(),
+
+      title:
+        courseData.title || "Untitled Course",
+
+      description:
+        courseData.description || "",
+
+      instructor:
+        courseData.instructor || "Instructor",
+
+      duration:
+        courseData.duration || "",
+
+      level:
+        courseData.level || "",
+
+      category:
+        courseData.category || "",
+
+    };
+
+
+    const updatedCourses = [
+
+      ...courses,
+
+      newCourse,
+
+    ];
+
+
+    setCourses(updatedCourses);
+
+
+    localStorage.setItem(
+
+      "courses",
+
+      JSON.stringify(
+        updatedCourses
+      )
+
+    );
+
+
+    return newCourse;
+
+  }
+
+
+  // =========================
+  // Update Course
+  // =========================
+
+  function updateCourse(
+    id,
+    updatedData
+  ) {
+
+    const updatedCourses =
+      courses.map((course) => {
+
+        if (
+          String(course.id) ===
+          String(id)
+        ) {
+
+          return {
+
+            ...course,
+
+            ...updatedData,
+
+          };
+
+        }
+
+
+        return course;
+
+      });
+
+
+    setCourses(updatedCourses);
+
+
+    localStorage.setItem(
+
+      "courses",
+
+      JSON.stringify(
+        updatedCourses
+      )
+
+    );
+
+  }
+
+
+  // =========================
+  // Delete Course
+  // =========================
+
+  function deleteCourse(id) {
+
+    const updatedCourses =
+      courses.filter(
+
+        (course) =>
+          String(course.id) !==
+          String(id)
+
+      );
+
+
+    setCourses(updatedCourses);
+
+
+    localStorage.setItem(
+
+      "courses",
+
+      JSON.stringify(
+        updatedCourses
+      )
+
+    );
+
+
+    // Also remove the course
+    // from enrolled courses
+
+    const updatedEnrollments =
+      enrolledCourses.filter(
+
+        (course) =>
+          String(course.id) !==
+          String(id)
+
+      );
+
+
+    setEnrolledCourses(
+      updatedEnrollments
+    );
+
+
+    localStorage.setItem(
+
+      "enrolledCourses",
+
+      JSON.stringify(
+        updatedEnrollments
+      )
+
+    );
+
+  }
+
+
+  // =========================
+  // Enroll Course
+  // =========================
+
+  function enrollCourse(course) {
 
     const alreadyEnrolled =
       enrolledCourses.some(
 
         (item) =>
-
-          item.courseId === course.id &&
-
-          item.studentEmail ===
-            loggedInUser.email
+          String(item.id) ===
+          String(course.id)
 
       );
 
 
     if (alreadyEnrolled) {
 
-      alert(
-        "You are already enrolled in this course."
-      );
-
       return;
 
     }
-
-
-    const enrollment = {
-
-      courseId: course.id,
-
-      course: course,
-
-      studentName:
-        loggedInUser.name,
-
-      studentEmail:
-        loggedInUser.email,
-
-    };
 
 
     const updatedEnrollments = [
 
       ...enrolledCourses,
 
-      enrollment,
+      course,
 
     ];
 
@@ -204,9 +296,21 @@ export function CourseProvider({ children }) {
 
     );
 
+  }
 
-    alert(
-      "Course enrolled successfully!"
+
+  // =========================
+  // Get Course
+  // =========================
+
+  function getCourseById(id) {
+
+    return courses.find(
+
+      (course) =>
+        String(course.id) ===
+        String(id)
+
     );
 
   }
@@ -222,13 +326,15 @@ export function CourseProvider({ children }) {
 
         enrolledCourses,
 
-        addCourse,
+        createCourse,
 
         updateCourse,
 
         deleteCourse,
 
         enrollCourse,
+
+        getCourseById,
 
       }}
 

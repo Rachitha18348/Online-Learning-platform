@@ -4,7 +4,7 @@ import { useCourses } from "../Context/CourseContext";
 
 function CreateCourse() {
 
-  const { addCourse } = useCourses();
+  const { createCourse } = useCourses();
   const navigate = useNavigate();
 
   const [course, setCourse] = useState({
@@ -83,7 +83,7 @@ function CreateCourse() {
       return;
     }
 
-    addCourse(course);
+    createCourse(course);
 
     alert("Course created successfully!");
 
